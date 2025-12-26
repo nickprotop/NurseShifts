@@ -1,0 +1,16 @@
+services:
+  nurseshifts:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "${PORT:-12000}:12000"
+    volumes:
+      - nurseshifts-data:/app/db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DB_PATH=/app/db/nurseshifts.db
+    restart: unless-stopped
+
+volumes:
+  nurseshifts-data:

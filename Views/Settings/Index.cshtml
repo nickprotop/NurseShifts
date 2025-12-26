@@ -1,0 +1,114 @@
+@model NurseShifts.Models.SystemSettings
+@{
+    ViewData["Title"] = Localizer["SystemSettings"];
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-gear me-2"></i>@Localizer["SystemSettings"]</h1>
+        <p class="text-muted">@Localizer["SettingsSubtitle"]</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">@Localizer["DefaultSettings"]</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Index" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="AdminUsername" />
+                    <input type="hidden" asp-for="AdminPasswordHash" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DefaultContractedHoursPerWeek" class="form-label">
+                                <i class="bi bi-clock me-1"></i>@Localizer["ContractedHours"]
+                            </label>
+                            <input asp-for="DefaultContractedHoursPerWeek" class="form-control" type="number" min="1" max="168" />
+                            <div class="form-text">@Localizer["ContractedHoursHelp"]</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DefaultMaxOvertimeHoursPerWeek" class="form-label">
+                                <i class="bi bi-clock-history me-1"></i>@Localizer["MaxOvertimeHours"]
+                            </label>
+                            <input asp-for="DefaultMaxOvertimeHoursPerWeek" class="form-control" type="number" min="0" max="40" />
+                            <div class="form-text">@Localizer["MaxOvertimeHoursHelp"]</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DefaultMinRestHoursBetweenShifts" class="form-label">
+                                <i class="bi bi-moon-stars me-1"></i>@Localizer["MinRestHours"]
+                            </label>
+                            <input asp-for="DefaultMinRestHoursBetweenShifts" class="form-control" type="number" min="8" max="24" />
+                            <div class="form-text">@Localizer["MinRestHoursHelp"]</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DefaultMaxConsecutiveWorkDays" class="form-label">
+                                <i class="bi bi-calendar-range me-1"></i>@Localizer["MaxConsecutiveDays"]
+                            </label>
+                            <input asp-for="DefaultMaxConsecutiveWorkDays" class="form-control" type="number" min="1" max="14" />
+                            <div class="form-text">@Localizer["MaxConsecutiveDaysHelp"]</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Language" class="form-label">
+                                <i class="bi bi-globe me-1"></i>@Localizer["Language"]
+                            </label>
+                            <select asp-for="Language" class="form-select">
+                                <option value="en">English</option>
+                                <option value="el">Ελληνικά (Greek)</option>
+                            </select>
+                            <div class="form-text">@Localizer["LanguageHelp"]</div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>@Localizer["BackToDashboard"]
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>@Localizer["SaveSettings"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-1"></i>@Localizer["AboutSettings"]</h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    @Localizer["SettingsDescription"]
+                </p>
+                <hr />
+                <h6>@Localizer["SettingPrecedence"]:</h6>
+                <ol class="small text-muted">
+                    <li>@Localizer["NurseSpecificSetting"]</li>
+                    <li>@Localizer["SystemDefault"]</li>
+                </ol>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-lock me-1"></i>@Localizer["Security"]</h5>
+            </div>
+            <div class="card-body">
+                <a asp-action="ChangePassword" class="btn btn-outline-warning w-100">
+                    <i class="bi bi-key me-1"></i>@Localizer["ChangePassword"]
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

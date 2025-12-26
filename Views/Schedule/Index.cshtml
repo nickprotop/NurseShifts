@@ -1,0 +1,378 @@
+@model NurseShifts.Models.ViewModels.ScheduleViewModel
+@{
+    ViewData["Title"] = Localizer["Schedule"];
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1><i class="bi bi-calendar3 me-2"></i>@Localizer["Schedule"]</h1>
+        <p class="text-muted mb-0">
+            @Model.Clinic?.Name - @Model.StartDate.ToString("MMM d") - @Model.StartDate.AddDays(Model.Days - 1).ToString("MMM d, yyyy")
+        </p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-auto">
+                <select name="clinicId" class="form-select form-select-sm" onchange="this.form.submit()">
+                    @foreach (var clinic in (IEnumerable<SelectListItem>)ViewBag.Clinics)
+                    {
+                        <option value="@clinic.Value" selected="@(clinic.Value == Model.ClinicId.ToString())">@clinic.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="startDate" class="form-control form-control-sm"
+                       value="@Model.StartDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+            </div>
+            <div class="col-auto">
+                <div class="btn-group btn-group-sm">
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-days="7"
+                       class="btn @(Model.Days == 7 ? "btn-primary" : "btn-outline-primary")">7 @Localizer["Days"]</a>
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-days="14"
+                       class="btn @(Model.Days == 14 ? "btn-primary" : "btn-outline-primary")">14 @Localizer["Days"]</a>
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-days="28"
+                       class="btn @(Model.Days == 28 ? "btn-primary" : "btn-outline-primary")">28 @Localizer["Days"]</a>
+                </div>
+            </div>
+            <div class="col-auto ms-auto">
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#generateModal">
+                    <i class="bi bi-magic me-1"></i>@Localizer["AutoGenerate"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        @Localizer[TempData["Error"].ToString()!]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-bordered mb-0 schedule-table">
+            <thead class="table-light">
+                <tr>
+                    <th width="100">@Localizer["ShiftType"]</th>
+                    @foreach (var day in Model.DaySchedules)
+                    {
+                        var isWeekend = day.Date.DayOfWeek == DayOfWeek.Saturday || day.Date.DayOfWeek == DayOfWeek.Sunday;
+                        <th class="text-center @(isWeekend ? "bg-light" : "")" style="min-width: 120px;">
+                            <div class="small text-muted">@day.Date.DayOfWeek.ToString().Substring(0, 3)</div>
+                            <div>@day.Date.ToString("MMM d")</div>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var shiftType in Enum.GetValues<NurseShifts.Models.ShiftType>())
+                {
+                    var icon = shiftType switch
+                    {
+                        NurseShifts.Models.ShiftType.Morning => "bi-sunrise text-warning",
+                        NurseShifts.Models.ShiftType.Afternoon => "bi-sun text-info",
+                        NurseShifts.Models.ShiftType.Night => "bi-moon text-dark",
+                        _ => "bi-clock"
+                    };
+                    var shiftName = shiftType switch
+                    {
+                        NurseShifts.Models.ShiftType.Morning => Localizer["Morning"].Value,
+                        NurseShifts.Models.ShiftType.Afternoon => Localizer["Afternoon"].Value,
+                        NurseShifts.Models.ShiftType.Night => Localizer["Night"].Value,
+                        _ => shiftType.ToString()
+                    };
+                    var timeRange = shiftType switch
+                    {
+                        NurseShifts.Models.ShiftType.Morning => "07-15",
+                        NurseShifts.Models.ShiftType.Afternoon => "15-23",
+                        NurseShifts.Models.ShiftType.Night => "23-07",
+                        _ => ""
+                    };
+                    <tr>
+                        <td class="align-middle">
+                            <i class="bi @icon me-1"></i>
+                            <strong>@shiftName</strong>
+                            <br /><small class="text-muted">@timeRange</small>
+                        </td>
+                        @foreach (var day in Model.DaySchedules)
+                        {
+                            var shift = day.Shifts.FirstOrDefault(s => s.ShiftType == shiftType);
+                            var isWeekend = day.Date.DayOfWeek == DayOfWeek.Saturday || day.Date.DayOfWeek == DayOfWeek.Sunday;
+                            var cellClass = "";
+                            if (shift != null && !shift.IsValid)
+                            {
+                                cellClass = shift.Errors.Any() ? "table-danger" : "table-warning";
+                            }
+                            <td class="@cellClass @(isWeekend ? "bg-light bg-opacity-50" : "")"
+                                data-clinic="@Model.ClinicId" data-date="@day.Date.ToString("yyyy-MM-dd")" data-shift="@shiftType">
+
+                                @if (shift != null)
+                                {
+                                    <div class="shift-cell">
+                                        @if (shift.Assignments.Any())
+                                        {
+                                            <ul class="list-unstyled mb-1">
+                                                @foreach (var assignment in shift.Assignments)
+                                                {
+                                                    <li class="d-flex align-items-center justify-content-between mb-1 assignment-item"
+                                                        data-assignment-id="@assignment.Id">
+                                                        <span class="small">
+                                                            @if (assignment.IsResponsibleNurse)
+                                                            {
+                                                                <i class="bi bi-star-fill text-warning" title="@Localizer["ResponsibleNurse"]"></i>
+                                                            }
+                                                            @if (assignment.IsBorrowed)
+                                                            {
+                                                                <span class="badge bg-secondary badge-sm" title="@Localizer["Borrowed"]">B</span>
+                                                            }
+                                                            @assignment.Nurse?.ShortName
+                                                        </span>
+                                                        <button type="button" class="btn btn-link btn-sm text-danger p-0 remove-assignment"
+                                                                title="@Localizer["Delete"]">
+                                                            <i class="bi bi-x"></i>
+                                                        </button>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <small class="text-muted">
+                                                @shift.Assignments.Count / @shift.RequiredNurses
+                                            </small>
+                                            <button type="button" class="btn btn-link btn-sm p-0 add-nurse-btn"
+                                                    title="@Localizer["AddNurseToShift"]">
+                                                <i class="bi bi-plus-circle"></i>
+                                            </button>
+                                        </div>
+
+                                        @if (shift.Errors.Any() || shift.Warnings.Any())
+                                        {
+                                            <div class="mt-1">
+                                                @foreach (var error in shift.Errors)
+                                                {
+                                                    <div class="text-danger small">
+                                                        <i class="bi bi-exclamation-circle"></i> @error
+                                                    </div>
+                                                }
+                                                @foreach (var warning in shift.Warnings)
+                                                {
+                                                    <div class="text-warning small">
+                                                        <i class="bi bi-exclamation-triangle"></i> @warning
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h6>@Localizer["Legend"]</h6>
+        <span class="me-3"><i class="bi bi-star-fill text-warning"></i> @Localizer["ResponsibleNurse"]</span>
+        <span class="me-3"><span class="badge bg-secondary">B</span> @Localizer["BorrowedFromOtherClinic"]</span>
+        <span class="me-3 text-danger"><i class="bi bi-exclamation-circle"></i> @Localizer["ErrorMustFix"]</span>
+        <span class="me-3 text-warning"><i class="bi bi-exclamation-triangle"></i> @Localizer["Warning"]</span>
+    </div>
+</div>
+
+<!-- Generate Modal -->
+<div class="modal fade" id="generateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-magic me-2"></i>@Localizer["AutoGenerate"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="Generate" method="post">
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        @Localizer["GenerateWarning"]
+                    </div>
+
+                    <input type="hidden" name="clinicId" value="@Model.ClinicId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">@Localizer["StartDate"]</label>
+                        <input type="date" name="startDate" class="form-control"
+                               value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">@Localizer["DaysToGenerate"]</label>
+                        <select name="days" class="form-select">
+                            <option value="7">7 @Localizer["Days"]</option>
+                            <option value="14">14 @Localizer["Days"]</option>
+                            <option value="28" selected>28 @Localizer["Days"]</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-magic me-1"></i>@Localizer["Generate"]
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Nurse Modal -->
+<div class="modal fade" id="addNurseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>@Localizer["AddNurseToShift"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="availableNursesList">
+                    <div class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm" role="status"></div>
+                        @Localizer["Loading"]...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addNurseModal = new bootstrap.Modal(document.getElementById('addNurseModal'));
+            let currentCell = null;
+
+            // Add nurse button click
+            document.querySelectorAll('.add-nurse-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentCell = this.closest('td');
+                    const clinicId = currentCell.dataset.clinic;
+                    const date = currentCell.dataset.date;
+                    const shiftType = currentCell.dataset.shift;
+
+                    document.getElementById('availableNursesList').innerHTML =
+                        '<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div> @Localizer["Loading"]...</div>';
+
+                    addNurseModal.show();
+
+                    fetch(`/Schedule/GetAvailableNurses?clinicId=${clinicId}&date=${date}&shiftType=${shiftType}`)
+                        .then(r => r.json())
+                        .then(nurses => {
+                            let html = '';
+                            if (nurses.length === 0) {
+                                html = '<p class="text-muted text-center">@Localizer["NoNursesAvailable"]</p>';
+                            } else {
+                                html = '<div class="list-group">';
+                                nurses.forEach(nurse => {
+                                    const available = nurse.isAvailable;
+                                    const borrowed = nurse.isBorrowed;
+                                    html += `
+                                        <div class="list-group-item ${!available ? 'list-group-item-secondary' : ''}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>${nurse.name}</strong>
+                                                    ${borrowed ? '<span class="badge bg-info ms-1">@Localizer["PoolNurse"]/@Localizer["Borrowed"]</span>' : ''}
+                                                    ${nurse.canHandleResponsibility ? '<i class="bi bi-star-fill text-warning ms-1" title="@Localizer["CanHandleResponsibility"]"></i>' : ''}
+                                                    ${!available ? '<br><small class="text-muted">' + nurse.reasons.join(', ') + '</small>' : ''}
+                                                </div>
+                                                <div>
+                                                    ${available ? `
+                                                        <button type="button" class="btn btn-sm btn-outline-primary assign-nurse"
+                                                                data-nurse-id="${nurse.nurseId}" data-responsible="false">
+                                                            @Localizer["Assign"]
+                                                        </button>
+                                                        ${nurse.canHandleResponsibility ? `
+                                                            <button type="button" class="btn btn-sm btn-warning assign-nurse"
+                                                                    data-nurse-id="${nurse.nurseId}" data-responsible="true">
+                                                                <i class="bi bi-star-fill"></i>
+                                                            </button>
+                                                        ` : ''}
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                html += '</div>';
+                            }
+                            document.getElementById('availableNursesList').innerHTML = html;
+
+                            // Attach handlers
+                            document.querySelectorAll('.assign-nurse').forEach(btn => {
+                                btn.addEventListener('click', function() {
+                                    const nurseId = this.dataset.nurseId;
+                                    const isResponsible = this.dataset.responsible === 'true';
+                                    assignNurse(clinicId, date, shiftType, nurseId, isResponsible);
+                                });
+                            });
+                        });
+                });
+            });
+
+            // Remove assignment
+            document.querySelectorAll('.remove-assignment').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const item = this.closest('.assignment-item');
+                    const assignmentId = item.dataset.assignmentId;
+
+                    fetch('/Schedule/RemoveAssignment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `assignmentId=${assignmentId}`
+                    }).then(r => {
+                        if (r.ok) location.reload();
+                    });
+                });
+            });
+
+            function assignNurse(clinicId, date, shiftType, nurseId, isResponsible) {
+                fetch('/Schedule/AssignNurse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `clinicId=${clinicId}&date=${date}&shiftType=${shiftType}&nurseId=${nurseId}&isResponsible=${isResponsible}`
+                }).then(r => {
+                    if (r.ok) location.reload();
+                    else alert('@Localizer["CouldNotAssignNurse"]');
+                });
+            }
+        });
+    </script>
+
+    <style>
+        .schedule-table td {
+            vertical-align: top;
+            padding: 0.5rem;
+        }
+        .shift-cell {
+            min-height: 60px;
+        }
+        .assignment-item .remove-assignment {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .assignment-item:hover .remove-assignment {
+            opacity: 1;
+        }
+    </style>
+}

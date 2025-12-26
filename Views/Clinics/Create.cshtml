@@ -1,0 +1,50 @@
+@model NurseShifts.Models.Clinic
+@{
+    ViewData["Title"] = Localizer["AddClinic"];
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-building me-2"></i>@Localizer["AddClinic"]</h1>
+        <p class="text-muted">@Localizer["CreateNewClinic"]</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">@Localizer["ClinicName"]</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="HeadNurseId" class="form-label">@Localizer["HeadNurse"] (@Localizer["Optional"])</label>
+                        <select asp-for="HeadNurseId" asp-items="ViewBag.Nurses" class="form-select">
+                            <option value="">-- @Localizer["SelectLater"] --</option>
+                        </select>
+                        <div class="form-text">@Localizer["HeadNurseHelp"]</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>@Localizer["Cancel"]
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>@Localizer["CreateClinic"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

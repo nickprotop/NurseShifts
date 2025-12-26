@@ -1,0 +1,257 @@
+@model NurseShifts.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = Localizer["Dashboard"];
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-speedometer2 me-2"></i>@Localizer["Dashboard"]</h1>
+        <p class="text-muted">@Localizer["DashboardSubtitle"]</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-white-50">@Localizer["TotalNurses"]</h6>
+                        <h2 class="mb-0">@Model.TotalNurses</h2>
+                    </div>
+                    <i class="bi bi-people fs-1 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a asp-controller="Nurses" asp-action="Index" class="text-white text-decoration-none">
+                    @Localizer["ViewAll"] <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-white-50">@Localizer["TotalClinics"]</h6>
+                        <h2 class="mb-0">@Model.TotalClinics</h2>
+                    </div>
+                    <i class="bi bi-building fs-1 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a asp-controller="Clinics" asp-action="Index" class="text-white text-decoration-none">
+                    @Localizer["ViewAll"] <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-dark-50">@Localizer["PendingLeave"]</h6>
+                        <h2 class="mb-0">@Model.PendingLeaveRequests</h2>
+                    </div>
+                    <i class="bi bi-calendar-x fs-1 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a asp-controller="Leave" asp-action="Index" asp-route-status="Pending" class="text-dark text-decoration-none">
+                    @Localizer["Review"] <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-1 text-white-50">@Localizer["UnderstaffedShifts"]</h6>
+                        <h2 class="mb-0">@Model.UnderstaffedShifts</h2>
+                    </div>
+                    <i class="bi bi-exclamation-triangle fs-1 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a asp-controller="Schedule" asp-action="Index" class="text-white text-decoration-none">
+                    @Localizer["ViewSchedule"] <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-day me-2"></i>@Localizer["TodaysSchedule"] - @DateTime.Today.ToString("dddd, MMMM d, yyyy")</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.TodayAssignments.Any())
+                {
+                    @foreach (var clinicGroup in Model.TodayAssignments.GroupBy(a => a.Clinic?.Name ?? "Unknown"))
+                    {
+                        <h6 class="text-primary mb-3">@clinicGroup.Key</h6>
+                        <div class="row mb-3">
+                            @foreach (var shiftType in Enum.GetValues<NurseShifts.Models.ShiftType>())
+                            {
+                                var shiftAssignments = clinicGroup.Where(a => a.ShiftType == shiftType).ToList();
+                                <div class="col-md-4">
+                                    <div class="card @(shiftType == NurseShifts.Models.ShiftType.Morning ? "border-warning" : shiftType == NurseShifts.Models.ShiftType.Afternoon ? "border-info" : "border-dark")">
+                                        <div class="card-header py-2 @(shiftType == NurseShifts.Models.ShiftType.Morning ? "bg-warning bg-opacity-25" : shiftType == NurseShifts.Models.ShiftType.Afternoon ? "bg-info bg-opacity-25" : "bg-dark bg-opacity-25")">
+                                            <small class="fw-bold">
+                                                @switch (shiftType)
+                                                {
+                                                    case NurseShifts.Models.ShiftType.Morning:
+                                                        <i class="bi bi-sunrise me-1"></i>
+                                                        <text>@Localizer["Morning"] (07-15)</text>
+                                                        break;
+                                                    case NurseShifts.Models.ShiftType.Afternoon:
+                                                        <i class="bi bi-sun me-1"></i>
+                                                        <text>@Localizer["Afternoon"] (15-23)</text>
+                                                        break;
+                                                    case NurseShifts.Models.ShiftType.Night:
+                                                        <i class="bi bi-moon me-1"></i>
+                                                        <text>@Localizer["Night"] (23-07)</text>
+                                                        break;
+                                                }
+                                            </small>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            @if (shiftAssignments.Any())
+                                            {
+                                                <ul class="list-unstyled mb-0">
+                                                    @foreach (var assignment in shiftAssignments)
+                                                    {
+                                                        <li class="small">
+                                                            @if (assignment.IsResponsibleNurse)
+                                                            {
+                                                                <i class="bi bi-star-fill text-warning me-1" title="@Localizer["ResponsibleNurse"]"></i>
+                                                            }
+                                                            @if (assignment.IsBorrowed)
+                                                            {
+                                                                <span class="badge bg-secondary me-1" title="@Localizer["Borrowed"]">B</span>
+                                                            }
+                                                            @assignment.Nurse?.FullName
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">@Localizer["NoAssignments"]</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-calendar-x fs-1"></i>
+                        <p class="mt-2">@Localizer["NoShiftsToday"]</p>
+                        <a asp-controller="Schedule" asp-action="Index" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>@Localizer["CreateSchedule"]
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>@Localizer["HighOvertimeBalance"]</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.HighOvertimeNurses.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var nurse in Model.HighOvertimeNurses)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span>@nurse.FullName</span>
+                                <span class="badge bg-danger rounded-pill">@nurse.OvertimeBalance h</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-check-circle fs-1 text-success"></i>
+                        <p class="mt-2 mb-0">@Localizer["NoHighOvertime"]</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-event me-2"></i>@Localizer["UpcomingLeave"]</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.UpcomingLeaves.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer["Nurse"]</th>
+                                    <th>@Localizer["Type"]</th>
+                                    <th>@Localizer["Dates"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var leave in Model.UpcomingLeaves)
+                                {
+                                    <tr>
+                                        <td>@leave.Nurse?.FullName</td>
+                                        <td><span class="badge bg-info">@leave.LeaveType</span></td>
+                                        <td>@leave.StartDate.ToString("MMM d") - @leave.EndDate.ToString("MMM d")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0 text-center">@Localizer["NoUpcomingLeave"]</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightning me-2"></i>@Localizer["QuickActions"]</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Schedule" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar3 me-2"></i>@Localizer["ViewSchedule"]
+                    </a>
+                    <a asp-controller="Nurses" asp-action="Create" class="btn btn-outline-success">
+                        <i class="bi bi-person-plus me-2"></i>@Localizer["AddNurse"]
+                    </a>
+                    <a asp-controller="Leave" asp-action="Create" class="btn btn-outline-warning">
+                        <i class="bi bi-calendar-plus me-2"></i>@Localizer["RecordLeave"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

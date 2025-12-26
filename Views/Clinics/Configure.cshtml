@@ -1,0 +1,116 @@
+@model NurseShifts.Models.Clinic
+@{
+    ViewData["Title"] = Localizer["ConfigureShifts"] + " - " + Model.Name;
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-sliders me-2"></i>@Localizer["ConfigureShifts"]</h1>
+        <p class="text-muted">@Localizer["SetRequiredNursesFor"] <strong>@Model.Name</strong></p>
+    </div>
+</div>
+
+<form asp-action="Configure" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-person-badge me-1"></i>@Localizer["HeadNurseSettings"]</h5>
+        </div>
+        <div class="card-body">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="autoAssignHeadNurseMorning"
+                       id="autoAssignHeadNurseMorning" value="true"
+                       @(Model.AutoAssignHeadNurseMorning ? "checked" : "") />
+                <label class="form-check-label" for="autoAssignHeadNurseMorning">
+                    @Localizer["AutoAssignHeadNurseMorning"]
+                </label>
+                <div class="form-text">@Localizer["AutoAssignHeadNurseMorningHelp"]</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var shiftType in Enum.GetValues<NurseShifts.Models.ShiftType>())
+        {
+            var config = Model.ShiftConfigurations?.FirstOrDefault(c => c.ShiftType == shiftType);
+            var icon = shiftType switch
+            {
+                NurseShifts.Models.ShiftType.Morning => "bi-sunrise text-warning",
+                NurseShifts.Models.ShiftType.Afternoon => "bi-sun text-info",
+                NurseShifts.Models.ShiftType.Night => "bi-moon text-dark",
+                _ => "bi-clock"
+            };
+            var shiftName = shiftType switch
+            {
+                NurseShifts.Models.ShiftType.Morning => Localizer["Morning"].Value,
+                NurseShifts.Models.ShiftType.Afternoon => Localizer["Afternoon"].Value,
+                NurseShifts.Models.ShiftType.Night => Localizer["Night"].Value,
+                _ => shiftType.ToString()
+            };
+            var timeRange = shiftType switch
+            {
+                NurseShifts.Models.ShiftType.Morning => "07:00 - 15:00",
+                NurseShifts.Models.ShiftType.Afternoon => "15:00 - 23:00",
+                NurseShifts.Models.ShiftType.Night => "23:00 - 07:00",
+                _ => ""
+            };
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi @icon me-2"></i>@shiftName
+                        </h5>
+                        <small class="text-muted">@timeRange</small>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" name="configs[@((int)shiftType)].ShiftType" value="@shiftType" />
+                        <input type="hidden" name="configs[@((int)shiftType)].Id" value="@(config?.Id ?? 0)" />
+
+                        <div class="mb-3">
+                            <label class="form-label">@Localizer["RequiredNurses"]</label>
+                            <input type="number" name="configs[@((int)shiftType)].RequiredNurses"
+                                   class="form-control" min="0" max="20"
+                                   value="@(config?.RequiredNurses ?? 1)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@Localizer["RequiredSeniorNurses"]</label>
+                            <input type="number" name="configs[@((int)shiftType)].RequiredSeniorNurses"
+                                   class="form-control" min="0" max="10"
+                                   value="@(config?.RequiredSeniorNurses ?? 0)" />
+                            <div class="form-text">@Localizer["MidOrSeniorLevel"]</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">@Localizer["ShiftDuration"]</label>
+                            <input type="number" name="configs[@((int)shiftType)].ShiftDurationHours"
+                                   class="form-control" min="1" max="12"
+                                   value="@(config?.ShiftDurationHours ?? 8)" />
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input"
+                                   name="configs[@((int)shiftType)].RequiresResponsibleNurse"
+                                   id="responsible_@shiftType" value="true"
+                                   @(config?.RequiresResponsibleNurse ?? true ? "checked" : "") />
+                            <label class="form-check-label" for="responsible_@shiftType">
+                                @Localizer["RequiresResponsibleNurse"]
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>@Localizer["BackToClinics"]
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>@Localizer["SaveConfiguration"]
+        </button>
+    </div>
+</form>

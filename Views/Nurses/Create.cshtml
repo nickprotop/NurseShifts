@@ -1,0 +1,232 @@
+@model NurseShifts.Models.Nurse
+@{
+    ViewData["Title"] = Localizer["AddNurse"];
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-person-plus me-2"></i>@Localizer["AddNurse"]</h1>
+        <p class="text-muted">@Localizer["RegisterNewNurse"]</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person me-1"></i>@Localizer["PersonalInformation"]</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label">@Localizer["FirstName"] *</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label">@Localizer["LastName"] *</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label">@Localizer["Phone"]</label>
+                            <input asp-for="Phone" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-briefcase me-1"></i>@Localizer["EmploymentDetails"]</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PrimaryClinicId" class="form-label">@Localizer["PrimaryClinic"] *</label>
+                            <select asp-for="PrimaryClinicId" asp-items="ViewBag.Clinics" class="form-select">
+                                <option value="">-- @Localizer["SelectLater"] --</option>
+                            </select>
+                            <span asp-validation-for="PrimaryClinicId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="HireDate" class="form-label">@Localizer["HireDate"] *</label>
+                            <input asp-for="HireDate" class="form-control" type="date" />
+                            <span asp-validation-for="HireDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="EmploymentType" class="form-label">@Localizer["EmploymentType"]</label>
+                            <select asp-for="EmploymentType" asp-items="Html.GetEnumSelectList<NurseShifts.Models.EmploymentType>()" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SkillLevel" class="form-label">@Localizer["SkillLevel"]</label>
+                            <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<NurseShifts.Models.SkillLevel>()" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ContractedHoursPerWeek" class="form-label">@Localizer["ContractedHours"]</label>
+                            <input asp-for="ContractedHoursPerWeek" class="form-control" type="number" min="1" max="60" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-2">
+                                <input asp-for="CanHandleResponsibility" class="form-check-input" />
+                                <label asp-for="CanHandleResponsibility" class="form-check-label">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>@Localizer["CanHandleResponsibility"]
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input asp-for="IsPoolNurse" class="form-check-input" />
+                                <label asp-for="IsPoolNurse" class="form-check-label">
+                                    <i class="bi bi-globe me-1"></i>@Localizer["PoolNurse"] (@Localizer["PoolNurseHelp"])
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input asp-for="PrefersConsecutiveDays" class="form-check-input" />
+                                <label asp-for="PrefersConsecutiveDays" class="form-check-label">
+                                    @Localizer["PrefersConsecutiveDays"]
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input asp-for="IsActive" class="form-check-input" checked />
+                                <label asp-for="IsActive" class="form-check-label">@Localizer["Active"]</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock me-1"></i>@Localizer["ShiftPreferences"]</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">@Localizer["PreferredShifts"]</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="PreferMorning" id="prefMorning" />
+                                <label class="form-check-label" for="prefMorning">
+                                    <i class="bi bi-sunrise text-warning me-1"></i>@Localizer["Morning"] (07-15)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="PreferAfternoon" id="prefAfternoon" />
+                                <label class="form-check-label" for="prefAfternoon">
+                                    <i class="bi bi-sun text-info me-1"></i>@Localizer["Afternoon"] (15-23)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="PreferNight" id="prefNight" />
+                                <label class="form-check-label" for="prefNight">
+                                    <i class="bi bi-moon me-1"></i>@Localizer["Night"] (23-07)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">@Localizer["AvoidedShifts"] (@Localizer["AvoidedShiftsHelp"])</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="AvoidMorning" id="avoidMorning" />
+                                <label class="form-check-label" for="avoidMorning">
+                                    <i class="bi bi-sunrise text-warning me-1"></i>@Localizer["Morning"]
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="AvoidAfternoon" id="avoidAfternoon" />
+                                <label class="form-check-label" for="avoidAfternoon">
+                                    <i class="bi bi-sun text-info me-1"></i>@Localizer["Afternoon"]
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="AvoidNight" id="avoidNight" />
+                                <label class="form-check-label" for="avoidNight">
+                                    <i class="bi bi-moon me-1"></i>@Localizer["Night"]
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-sliders me-1"></i>@Localizer["OverrideSettings"]</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">@Localizer["SystemDefaultPlaceholder"]</p>
+
+                    <div class="mb-3">
+                        <label asp-for="MaxOvertimeHoursPerWeek" class="form-label">@Localizer["MaxOvertimeHours"]</label>
+                        <input asp-for="MaxOvertimeHoursPerWeek" class="form-control" type="number" min="0" max="40" placeholder="@Localizer["SystemDefaultPlaceholder"]" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MaxConsecutiveWorkDays" class="form-label">@Localizer["MaxConsecutiveDays"]</label>
+                        <input asp-for="MaxConsecutiveWorkDays" class="form-control" type="number" min="1" max="14" placeholder="@Localizer["SystemDefaultPlaceholder"]" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MinRestHoursBetweenShifts" class="form-label">@Localizer["MinRestHours"]</label>
+                        <input asp-for="MinRestHoursBetweenShifts" class="form-control" type="number" min="8" max="24" placeholder="@Localizer["SystemDefaultPlaceholder"]" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-building me-1"></i>@Localizer["BorrowableClinics"]</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted">@Localizer["SelectBorrowableClinics"]</p>
+                    @{
+                        var allClinics = ViewBag.AllClinics as List<NurseShifts.Models.Clinic>;
+                    }
+                    @if (allClinics?.Any() == true)
+                    {
+                        @foreach (var clinic in allClinics)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input"
+                                       name="borrowableClinics" value="@clinic.Id" id="clinic_@clinic.Id" />
+                                <label class="form-check-label" for="clinic_@clinic.Id">@clinic.Name</label>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-0">@Localizer["NoClinicsAvailable"]</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>@Localizer["Cancel"]
+        </a>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>@Localizer["CreateNurse"]
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,63 @@
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# .NET Core
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.suo
+*.cache
+*.vspscc
+*.vssscc
+
+# JetBrains Rider
+.idea/
+
+# User-specific files
+*.rsuser
+*.userprefs
+
+# SQLite database (local development)
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+
+# ASP.NET
+project.lock.json
+appsettings.*.json
+!appsettings.Development.json.template
+
+# NuGet
+*.nupkg
+**/packages/*
+*.nuget.props
+*.nuget.targets
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# LRM (localization tool)
+.lrm/
+
+# Misc
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+node_modules/
+dist/
+.vscode/
+.DS_Store
+Thumbs.db

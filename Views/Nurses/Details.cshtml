@@ -1,0 +1,224 @@
+@model NurseShifts.Models.Nurse
+@{
+    ViewData["Title"] = Model.FullName;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>
+            @if (Model.CanHandleResponsibility)
+            {
+                <i class="bi bi-star-fill text-warning me-2" title="@Localizer["CanHandleResponsibility"]"></i>
+            }
+            @Model.FullName
+        </h1>
+        <p class="text-muted mb-0">
+            @if (Model.IsPoolNurse)
+            {
+                <span class="badge bg-info me-1">@Localizer["PoolNurse"]</span>
+            }
+            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                @(Model.IsActive ? Localizer["Active"] : Localizer["Inactive"])
+            </span>
+        </p>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="bi bi-pencil me-1"></i>@Localizer["Edit"]
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>@Localizer["Back"]
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person me-1"></i>@Localizer["PersonalInformation"]</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">@Localizer["Name"]</dt>
+                    <dd class="col-7">@Model.FullName</dd>
+
+                    <dt class="col-5">@Localizer["Email"]</dt>
+                    <dd class="col-7">@(Model.Email ?? "—")</dd>
+
+                    <dt class="col-5">@Localizer["Phone"]</dt>
+                    <dd class="col-7">@(Model.Phone ?? "—")</dd>
+
+                    <dt class="col-5">@Localizer["HireDate"]</dt>
+                    <dd class="col-7">@Model.HireDate.ToString("MMM d, yyyy")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-briefcase me-1"></i>@Localizer["EmploymentDetails"]</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-6">@Localizer["PrimaryClinic"]</dt>
+                    <dd class="col-6">@Model.PrimaryClinic?.Name</dd>
+
+                    <dt class="col-6">@Localizer["Type"]</dt>
+                    <dd class="col-6">
+                        <span class="badge @(Model.EmploymentType == NurseShifts.Models.EmploymentType.FullTime ? "bg-success" : Model.EmploymentType == NurseShifts.Models.EmploymentType.PartTime ? "bg-warning text-dark" : "bg-secondary")">
+                            @Model.EmploymentType
+                        </span>
+                    </dd>
+
+                    <dt class="col-6">@Localizer["Level"]</dt>
+                    <dd class="col-6">
+                        <span class="badge @(Model.SkillLevel == NurseShifts.Models.SkillLevel.Senior ? "bg-primary" : Model.SkillLevel == NurseShifts.Models.SkillLevel.Mid ? "bg-info" : "bg-light text-dark")">
+                            @Model.SkillLevel
+                        </span>
+                    </dd>
+
+                    <dt class="col-6">@Localizer["HoursWeek"]</dt>
+                    <dd class="col-6">@Model.ContractedHoursPerWeek</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock me-1"></i>@Localizer["ShiftPreferences"]</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted">@Localizer["PreferredShifts"]</h6>
+                @if (Model.PreferredShifts != NurseShifts.Models.ShiftTypeFlags.None)
+                {
+                    @if (Model.PreferredShifts.HasFlag(NurseShifts.Models.ShiftTypeFlags.Morning))
+                    {
+                        <span class="badge bg-warning text-dark me-1"><i class="bi bi-sunrise me-1"></i>@Localizer["Morning"]</span>
+                    }
+                    @if (Model.PreferredShifts.HasFlag(NurseShifts.Models.ShiftTypeFlags.Afternoon))
+                    {
+                        <span class="badge bg-info me-1"><i class="bi bi-sun me-1"></i>@Localizer["Afternoon"]</span>
+                    }
+                    @if (Model.PreferredShifts.HasFlag(NurseShifts.Models.ShiftTypeFlags.Night))
+                    {
+                        <span class="badge bg-dark me-1"><i class="bi bi-moon me-1"></i>@Localizer["Night"]</span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">@Localizer["None"]</span>
+                }
+
+                <h6 class="text-muted mt-3">@Localizer["AvoidedShifts"]</h6>
+                @if (Model.AvoidedShifts != NurseShifts.Models.ShiftTypeFlags.None)
+                {
+                    @if (Model.AvoidedShifts.HasFlag(NurseShifts.Models.ShiftTypeFlags.Morning))
+                    {
+                        <span class="badge bg-danger me-1">@Localizer["Morning"]</span>
+                    }
+                    @if (Model.AvoidedShifts.HasFlag(NurseShifts.Models.ShiftTypeFlags.Afternoon))
+                    {
+                        <span class="badge bg-danger me-1">@Localizer["Afternoon"]</span>
+                    }
+                    @if (Model.AvoidedShifts.HasFlag(NurseShifts.Models.ShiftTypeFlags.Night))
+                    {
+                        <span class="badge bg-danger me-1">@Localizer["Night"]</span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">@Localizer["None"]</span>
+                }
+
+                <hr />
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" disabled @(Model.PrefersConsecutiveDays ? "checked" : "") />
+                    <label class="form-check-label">@Localizer["PrefersConsecutiveDays"]</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-sliders me-1"></i>@Localizer["OverrideSettings"]</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-7">@Localizer["MaxOvertimeHours"]</dt>
+                    <dd class="col-5">@(Model.MaxOvertimeHoursPerWeek?.ToString() ?? Localizer["SystemDefault"]) h</dd>
+
+                    <dt class="col-7">@Localizer["MaxConsecutiveDays"]</dt>
+                    <dd class="col-5">@(Model.MaxConsecutiveWorkDays?.ToString() ?? Localizer["SystemDefault"].Value)</dd>
+
+                    <dt class="col-7">@Localizer["MinRestHours"]</dt>
+                    <dd class="col-5">@(Model.MinRestHoursBetweenShifts?.ToString() ?? Localizer["SystemDefault"]) h</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-building me-1"></i>@Localizer["BorrowableClinics"]</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.IsPoolNurse)
+                {
+                    <p class="text-info mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        @Localizer["PoolNurseHelp"]
+                    </p>
+                }
+                else if (Model.ClinicAssignments?.Any() == true)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var assignment in Model.ClinicAssignments.Where(ca => ca.CanBeBorrowed))
+                        {
+                            <li>
+                                <i class="bi bi-check-circle text-success me-1"></i>
+                                @assignment.Clinic?.Name
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">@Localizer["NotAssigned"]</p>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-event me-1"></i>@Localizer["UpcomingLeave"]</h5>
+                <a asp-controller="Leave" asp-action="Create" asp-route-nurseId="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Leaves?.Any(l => l.EndDate >= DateOnly.FromDateTime(DateTime.Today)) == true)
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var leave in Model.Leaves.Where(l => l.EndDate >= DateOnly.FromDateTime(DateTime.Today)).OrderBy(l => l.StartDate).Take(5))
+                        {
+                            <li class="mb-2">
+                                <span class="badge @(leave.Status == NurseShifts.Models.LeaveStatus.Approved ? "bg-success" : leave.Status == NurseShifts.Models.LeaveStatus.Pending ? "bg-warning text-dark" : "bg-danger") me-1">
+                                    @leave.LeaveType
+                                </span>
+                                <small>@leave.StartDate.ToString("MMM d") - @leave.EndDate.ToString("MMM d")</small>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">@Localizer["NoUpcomingLeave"]</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

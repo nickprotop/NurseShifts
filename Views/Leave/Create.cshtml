@@ -1,0 +1,103 @@
+@model NurseShifts.Models.NurseLeave
+@{
+    ViewData["Title"] = Localizer["RecordLeave"];
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-calendar-plus me-2"></i>@Localizer["RecordLeave"]</h1>
+        <p class="text-muted">@Localizer["AddLeaveRecord"]</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="NurseId" class="form-label">@Localizer["Nurse"] *</label>
+                        <select asp-for="NurseId" asp-items="ViewBag.Nurses" class="form-select">
+                            <option value="">-- @Localizer["SelectNurse"] --</option>
+                        </select>
+                        <span asp-validation-for="NurseId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LeaveType" class="form-label">@Localizer["LeaveType"] *</label>
+                        <select asp-for="LeaveType" asp-items="Html.GetEnumSelectList<NurseShifts.Models.LeaveType>()" class="form-select"></select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label">@Localizer["StartDate"] *</label>
+                            <input asp-for="StartDate" class="form-control" type="date" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndDate" class="form-label">@Localizer["EndDate"] *</label>
+                            <input asp-for="EndDate" class="form-control" type="date" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label">@Localizer["Status"]</label>
+                        <select asp-for="Status" asp-items="Html.GetEnumSelectList<NurseShifts.Models.LeaveStatus>()" class="form-select"></select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label">@Localizer["Notes"]</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="@Localizer["Optional"]..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>@Localizer["Cancel"]
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>@Localizer["Save"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-1"></i>@Localizer["LeaveTypes"]</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <span class="badge bg-danger me-2">@Localizer["Sick"]</span>
+                        @Localizer["SickDescription"]
+                    </li>
+                    <li class="mb-2">
+                        <span class="badge bg-success me-2">@Localizer["Vacation"]</span>
+                        @Localizer["VacationDescription"]
+                    </li>
+                    <li class="mb-2">
+                        <span class="badge bg-info me-2">@Localizer["Personal"]</span>
+                        @Localizer["PersonalDescription"]
+                    </li>
+                    <li class="mb-2">
+                        <span class="badge bg-primary me-2">@Localizer["Maternity"]</span>
+                        @Localizer["MaternityDescription"]
+                    </li>
+                    <li>
+                        <span class="badge bg-secondary me-2">@Localizer["Unpaid"]</span>
+                        @Localizer["UnpaidDescription"]
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

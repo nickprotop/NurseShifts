@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Navigation -->
+  <data name="Dashboard" xml:space="preserve"><value>Πίνακας Ελέγχου</value></data>
+  <data name="DashboardSubtitle" xml:space="preserve"><value>Επισκόπηση σημερινού προγράμματος και εκκρεμοτήτων</value></data>
+  <data name="Schedule" xml:space="preserve"><value>Πρόγραμμα</value></data>
+  <data name="Manage" xml:space="preserve"><value>Διαχείριση</value></data>
+  <data name="Clinics" xml:space="preserve"><value>Κλινικές</value></data>
+  <data name="ClinicsSubtitle" xml:space="preserve"><value>Διαχείριση κλινικών και ρυθμίσεων βαρδιών</value></data>
+  <data name="Nurses" xml:space="preserve"><value>Νοσηλευτές</value></data>
+  <data name="NursesSubtitle" xml:space="preserve"><value>Διαχείριση νοσηλευτικού προσωπικού</value></data>
+  <data name="LeaveRequests" xml:space="preserve"><value>Αιτήματα Άδειας</value></data>
+  <data name="Settings" xml:space="preserve"><value>Ρυθμίσεις</value></data>
+  <data name="ChangePassword" xml:space="preserve"><value>Αλλαγή Κωδικού</value></data>
+  <data name="ChangePasswordSubtitle" xml:space="preserve"><value>Ενημέρωση κωδικού διαχειριστή</value></data>
+  <data name="Logout" xml:space="preserve"><value>Αποσύνδεση</value></data>
+
+  <!-- Common Actions -->
+  <data name="Add" xml:space="preserve"><value>Προσθήκη</value></data>
+  <data name="Edit" xml:space="preserve"><value>Επεξεργασία</value></data>
+  <data name="Delete" xml:space="preserve"><value>Διαγραφή</value></data>
+  <data name="Save" xml:space="preserve"><value>Αποθήκευση</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Ακύρωση</value></data>
+  <data name="Back" xml:space="preserve"><value>Πίσω</value></data>
+  <data name="Create" xml:space="preserve"><value>Δημιουργία</value></data>
+  <data name="Details" xml:space="preserve"><value>Λεπτομέρειες</value></data>
+  <data name="Actions" xml:space="preserve"><value>Ενέργειες</value></data>
+  <data name="ViewAll" xml:space="preserve"><value>Προβολή όλων</value></data>
+  <data name="Review" xml:space="preserve"><value>Επισκόπηση</value></data>
+  <data name="ViewSchedule" xml:space="preserve"><value>Προβολή Προγράμματος</value></data>
+  <data name="SaveChanges" xml:space="preserve"><value>Αποθήκευση Αλλαγών</value></data>
+  <data name="SaveSettings" xml:space="preserve"><value>Αποθήκευση Ρυθμίσεων</value></data>
+  <data name="SaveConfiguration" xml:space="preserve"><value>Αποθήκευση Διαμόρφωσης</value></data>
+
+  <!-- Common Labels -->
+  <data name="Name" xml:space="preserve"><value>Όνομα</value></data>
+  <data name="Type" xml:space="preserve"><value>Τύπος</value></data>
+  <data name="Level" xml:space="preserve"><value>Επίπεδο</value></data>
+  <data name="Status" xml:space="preserve"><value>Κατάσταση</value></data>
+  <data name="Clinic" xml:space="preserve"><value>Κλινική</value></data>
+  <data name="Nurse" xml:space="preserve"><value>Νοσηλευτής</value></data>
+  <data name="Dates" xml:space="preserve"><value>Ημερομηνίες</value></data>
+  <data name="None" xml:space="preserve"><value>Κανένα</value></data>
+  <data name="Optional" xml:space="preserve"><value>Προαιρετικό</value></data>
+  <data name="SelectLater" xml:space="preserve"><value>Επιλογή αργότερα</value></data>
+  <data name="NotAssigned" xml:space="preserve"><value>Δεν έχει ανατεθεί</value></data>
+  <data name="HoursWeek" xml:space="preserve"><value>Ώρες/Εβδομάδα</value></data>
+  <data name="AllClinics" xml:space="preserve"><value>Όλες οι Κλινικές</value></data>
+  <data name="ActiveOnly" xml:space="preserve"><value>Μόνο ενεργοί</value></data>
+
+  <!-- Nurses -->
+  <data name="AddNurse" xml:space="preserve"><value>Προσθήκη Νοσηλευτή</value></data>
+  <data name="EditNurse" xml:space="preserve"><value>Επεξεργασία Νοσηλευτή</value></data>
+  <data name="DeleteNurse" xml:space="preserve"><value>Διαγραφή Νοσηλευτή</value></data>
+  <data name="FirstName" xml:space="preserve"><value>Όνομα</value></data>
+  <data name="LastName" xml:space="preserve"><value>Επώνυμο</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Phone" xml:space="preserve"><value>Τηλέφωνο</value></data>
+  <data name="PrimaryClinic" xml:space="preserve"><value>Κύρια Κλινική</value></data>
+  <data name="HireDate" xml:space="preserve"><value>Ημ/νία Πρόσληψης</value></data>
+  <data name="EmploymentType" xml:space="preserve"><value>Τύπος Απασχόλησης</value></data>
+  <data name="SkillLevel" xml:space="preserve"><value>Επίπεδο Εμπειρίας</value></data>
+  <data name="ContractedHours" xml:space="preserve"><value>Ώρες Σύμβασης/Εβδομάδα</value></data>
+  <data name="CanHandleResponsibility" xml:space="preserve"><value>Μπορεί να αναλάβει Ευθύνη</value></data>
+  <data name="PoolNurse" xml:space="preserve"><value>Νοσηλευτής Πούλ</value></data>
+  <data name="Active" xml:space="preserve"><value>Ενεργός</value></data>
+  <data name="Inactive" xml:space="preserve"><value>Ανενεργός</value></data>
+  <data name="PreferredShifts" xml:space="preserve"><value>Προτιμώμενες Βάρδιες</value></data>
+  <data name="AvoidedShifts" xml:space="preserve"><value>Αποφυγή Βαρδιών</value></data>
+  <data name="BorrowableClinics" xml:space="preserve"><value>Δανεισμός σε Κλινικές</value></data>
+  <data name="NoNursesFound" xml:space="preserve"><value>Δεν βρέθηκαν νοσηλευτές</value></data>
+  <data name="AddFirstNurse" xml:space="preserve"><value>Προσθέστε τον πρώτο νοσηλευτή για να ξεκινήσετε</value></data>
+  <data name="PersonalInformation" xml:space="preserve"><value>Προσωπικά Στοιχεία</value></data>
+  <data name="EmploymentDetails" xml:space="preserve"><value>Στοιχεία Απασχόλησης</value></data>
+  <data name="ShiftPreferences" xml:space="preserve"><value>Προτιμήσεις Βαρδιών</value></data>
+  <data name="OverrideSettings" xml:space="preserve"><value>Παράκαμψη Ρυθμίσεων</value></data>
+  <data name="PrefersConsecutiveDays" xml:space="preserve"><value>Προτιμά Συνεχόμενες Ημέρες Εργασίας</value></data>
+  <data name="PoolNurseHelp" xml:space="preserve"><value>Μπορεί να εργαστεί σε οποιαδήποτε κλινική</value></data>
+  <data name="AvoidedShiftsHelp" xml:space="preserve"><value>Δεν θα προγραμματιστεί</value></data>
+  <data name="SystemDefaultPlaceholder" xml:space="preserve"><value>Προεπιλογή συστήματος</value></data>
+  <data name="SelectBorrowableClinics" xml:space="preserve"><value>Επιλέξτε κλινικές για δανεισμό αυτού του νοσηλευτή</value></data>
+  <data name="NoClinicsAvailable" xml:space="preserve"><value>Δεν υπάρχουν διαθέσιμες κλινικές</value></data>
+  <data name="CreateNurse" xml:space="preserve"><value>Δημιουργία Νοσηλευτή</value></data>
+  <data name="RegisterNewNurse" xml:space="preserve"><value>Εγγραφή νέου νοσηλευτή</value></data>
+
+  <!-- Shifts -->
+  <data name="Morning" xml:space="preserve"><value>Πρωινή</value></data>
+  <data name="Afternoon" xml:space="preserve"><value>Απογευματινή</value></data>
+  <data name="Night" xml:space="preserve"><value>Νυχτερινή</value></data>
+  <data name="ShiftType" xml:space="preserve"><value>Τύπος Βάρδιας</value></data>
+  <data name="RequiredNurses" xml:space="preserve"><value>Απαιτούμενοι Νοσηλευτές</value></data>
+  <data name="RequiredSeniorNurses" xml:space="preserve"><value>Απαιτούμενοι Έμπειροι Νοσηλευτές</value></data>
+  <data name="ResponsibleNurse" xml:space="preserve"><value>Υπεύθυνος Νοσηλευτής</value></data>
+  <data name="Borrowed" xml:space="preserve"><value>Δανεικός</value></data>
+  <data name="ShiftConfiguration" xml:space="preserve"><value>Διαμόρφωση Βαρδιών</value></data>
+  <data name="ShiftDuration" xml:space="preserve"><value>Διάρκεια Βάρδιας (ώρες)</value></data>
+  <data name="MidOrSeniorLevel" xml:space="preserve"><value>Νοσηλευτές μεσαίου ή ανώτερου επιπέδου</value></data>
+  <data name="RequiresResponsibleNurse" xml:space="preserve"><value>Απαιτείται υπεύθυνος νοσηλευτής</value></data>
+
+  <!-- Clinics -->
+  <data name="AddClinic" xml:space="preserve"><value>Προσθήκη Κλινικής</value></data>
+  <data name="EditClinic" xml:space="preserve"><value>Επεξεργασία Κλινικής</value></data>
+  <data name="DeleteClinic" xml:space="preserve"><value>Διαγραφή Κλινικής</value></data>
+  <data name="CreateClinic" xml:space="preserve"><value>Δημιουργία Κλινικής</value></data>
+  <data name="ClinicName" xml:space="preserve"><value>Όνομα Κλινικής</value></data>
+  <data name="HeadNurse" xml:space="preserve"><value>Προϊστάμενος</value></data>
+  <data name="ConfigureShifts" xml:space="preserve"><value>Ρύθμιση Βαρδιών</value></data>
+  <data name="CreateNewClinic" xml:space="preserve"><value>Δημιουργία νέας κλινικής</value></data>
+  <data name="UpdateClinicDetails" xml:space="preserve"><value>Ενημέρωση στοιχείων κλινικής</value></data>
+  <data name="HeadNurseHelp" xml:space="preserve"><value>Μπορείτε να ορίσετε προϊστάμενο αφού προσθέσετε νοσηλευτές σε αυτή την κλινική</value></data>
+  <data name="ConfigureRequiredNurses" xml:space="preserve"><value>Ρύθμιση απαιτούμενων νοσηλευτών ανά τύπο βάρδιας</value></data>
+  <data name="SetRequiredNursesFor" xml:space="preserve"><value>Ορισμός απαιτούμενων νοσηλευτών για</value></data>
+  <data name="BackToClinics" xml:space="preserve"><value>Πίσω στις Κλινικές</value></data>
+  <data name="NoClinicsYet" xml:space="preserve"><value>Δεν υπάρχουν κλινικές ακόμα</value></data>
+  <data name="GetStartedClinic" xml:space="preserve"><value>Ξεκινήστε προσθέτοντας την πρώτη σας κλινική</value></data>
+  <data name="AreYouSure" xml:space="preserve"><value>Είστε σίγουροι;</value></data>
+  <data name="AboutToDeleteClinic" xml:space="preserve"><value>Πρόκειται να διαγράψετε την κλινική</value></data>
+  <data name="ActionCannotBeUndone" xml:space="preserve"><value>Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</value></data>
+  <data name="ClinicHasNurses" xml:space="preserve"><value>Αυτή η κλινική έχει νοσηλευτές. Θα αποδεσμευτούν.</value></data>
+
+  <!-- Leave -->
+  <data name="RecordLeave" xml:space="preserve"><value>Καταχώρηση Άδειας</value></data>
+  <data name="LeaveType" xml:space="preserve"><value>Τύπος Άδειας</value></data>
+  <data name="StartDate" xml:space="preserve"><value>Ημ/νία Έναρξης</value></data>
+  <data name="EndDate" xml:space="preserve"><value>Ημ/νία Λήξης</value></data>
+  <data name="Pending" xml:space="preserve"><value>Εκκρεμεί</value></data>
+  <data name="Approved" xml:space="preserve"><value>Εγκρίθηκε</value></data>
+  <data name="Rejected" xml:space="preserve"><value>Απορρίφθηκε</value></data>
+  <data name="Approve" xml:space="preserve"><value>Έγκριση</value></data>
+  <data name="Reject" xml:space="preserve"><value>Απόρριψη</value></data>
+  <data name="Sick" xml:space="preserve"><value>Ασθένεια</value></data>
+  <data name="Vacation" xml:space="preserve"><value>Κανονική</value></data>
+  <data name="Personal" xml:space="preserve"><value>Προσωπική</value></data>
+  <data name="Maternity" xml:space="preserve"><value>Μητρότητα</value></data>
+  <data name="Unpaid" xml:space="preserve"><value>Άνευ Αποδοχών</value></data>
+
+  <!-- Schedule -->
+  <data name="AutoGenerate" xml:space="preserve"><value>Αυτόματη Δημιουργία</value></data>
+  <data name="Days" xml:space="preserve"><value>ημέρες</value></data>
+  <data name="AddNurseToShift" xml:space="preserve"><value>Προσθήκη Νοσηλευτή στη Βάρδια</value></data>
+  <data name="NoAssignments" xml:space="preserve"><value>Χωρίς αναθέσεις</value></data>
+  <data name="Understaffed" xml:space="preserve"><value>Υποστελέχωση</value></data>
+  <data name="CreateSchedule" xml:space="preserve"><value>Δημιουργία Προγράμματος</value></data>
+  <data name="NoShiftsToday" xml:space="preserve"><value>Δεν υπάρχουν βάρδιες σήμερα</value></data>
+
+  <!-- Dashboard -->
+  <data name="TotalNurses" xml:space="preserve"><value>Σύνολο Νοσηλευτών</value></data>
+  <data name="TotalClinics" xml:space="preserve"><value>Σύνολο Κλινικών</value></data>
+  <data name="PendingLeave" xml:space="preserve"><value>Εκκρεμείς Άδειες</value></data>
+  <data name="UnderstaffedShifts" xml:space="preserve"><value>Βάρδιες με Έλλειψη</value></data>
+  <data name="TodaysSchedule" xml:space="preserve"><value>Σημερινό Πρόγραμμα</value></data>
+  <data name="HighOvertimeBalance" xml:space="preserve"><value>Υψηλό Υπόλοιπο Υπερωριών</value></data>
+  <data name="NoHighOvertime" xml:space="preserve"><value>Δεν υπάρχουν υψηλά υπόλοιπα υπερωριών</value></data>
+  <data name="UpcomingLeave" xml:space="preserve"><value>Επερχόμενες Άδειες</value></data>
+  <data name="NoUpcomingLeave" xml:space="preserve"><value>Δεν υπάρχουν επερχόμενες άδειες</value></data>
+  <data name="QuickActions" xml:space="preserve"><value>Γρήγορες Ενέργειες</value></data>
+
+  <!-- Settings -->
+  <data name="SystemSettings" xml:space="preserve"><value>Ρυθμίσεις Συστήματος</value></data>
+  <data name="SettingsSubtitle" xml:space="preserve"><value>Διαμόρφωση προεπιλεγμένων τιμών για το σύστημα προγραμματισμού</value></data>
+  <data name="DefaultSettings" xml:space="preserve"><value>Προεπιλεγμένες Ρυθμίσεις</value></data>
+  <data name="MaxOvertimeHours" xml:space="preserve"><value>Μέγ. Ώρες Υπερωρίας/Εβδομάδα</value></data>
+  <data name="MaxOvertimeHoursHelp" xml:space="preserve"><value>Μέγιστες επιτρεπόμενες ώρες υπερωρίας ανά εβδομάδα</value></data>
+  <data name="MinRestHours" xml:space="preserve"><value>Ελάχ. Ώρες Ξεκούρασης</value></data>
+  <data name="MinRestHoursHelp" xml:space="preserve"><value>Ελάχιστη περίοδος ξεκούρασης μεταξύ διαδοχικών βαρδιών (συνήθως 11 ώρες)</value></data>
+  <data name="MaxConsecutiveDays" xml:space="preserve"><value>Μέγ. Συνεχόμενες Ημέρες</value></data>
+  <data name="MaxConsecutiveDaysHelp" xml:space="preserve"><value>Μέγιστες ημέρες που μπορεί να εργαστεί ένας νοσηλευτής συνεχόμενα</value></data>
+  <data name="ContractedHoursHelp" xml:space="preserve"><value>Προεπιλεγμένες εβδομαδιαίες ώρες σύμβασης για νέους νοσηλευτές (συνήθως 40)</value></data>
+  <data name="Language" xml:space="preserve"><value>Γλώσσα</value></data>
+  <data name="LanguageHelp" xml:space="preserve"><value>Γλώσσα συστήματος για τη διεπαφή</value></data>
+  <data name="BackToDashboard" xml:space="preserve"><value>Πίσω στον Πίνακα Ελέγχου</value></data>
+  <data name="AboutSettings" xml:space="preserve"><value>Σχετικά με τις Ρυθμίσεις</value></data>
+  <data name="SettingsDescription" xml:space="preserve"><value>Αυτές οι ρυθμίσεις ορίζουν τις προεπιλογές του συστήματος. Οι νοσηλευτές μπορούν να έχουν τις δικές τους παρακάμψεις στο προφίλ τους.</value></data>
+  <data name="SettingPrecedence" xml:space="preserve"><value>Προτεραιότητα Ρυθμίσεων</value></data>
+  <data name="NurseSpecificSetting" xml:space="preserve"><value>Ρύθμιση νοσηλευτή (αν έχει οριστεί)</value></data>
+  <data name="SystemDefault" xml:space="preserve"><value>Προεπιλογή συστήματος (αυτές οι ρυθμίσεις)</value></data>
+  <data name="Security" xml:space="preserve"><value>Ασφάλεια</value></data>
+  <data name="CurrentPassword" xml:space="preserve"><value>Τρέχων Κωδικός</value></data>
+  <data name="NewPassword" xml:space="preserve"><value>Νέος Κωδικός</value></data>
+  <data name="ConfirmNewPassword" xml:space="preserve"><value>Επιβεβαίωση Νέου Κωδικού</value></data>
+  <data name="MinimumCharacters" xml:space="preserve"><value>Ελάχιστο 6 χαρακτήρες</value></data>
+
+  <!-- Employment Types -->
+  <data name="FullTime" xml:space="preserve"><value>Πλήρης Απασχόληση</value></data>
+  <data name="PartTime" xml:space="preserve"><value>Μερική Απασχόληση</value></data>
+  <data name="PerDiem" xml:space="preserve"><value>Ημερήσια</value></data>
+
+  <!-- Skill Levels -->
+  <data name="Junior" xml:space="preserve"><value>Αρχάριος</value></data>
+  <data name="Mid" xml:space="preserve"><value>Μεσαίος</value></data>
+  <data name="Senior" xml:space="preserve"><value>Έμπειρος</value></data>
+
+  <!-- Messages -->
+  <data name="SavedSuccessfully" xml:space="preserve"><value>Αποθηκεύτηκε επιτυχώς.</value></data>
+  <data name="DeleteConfirmation" xml:space="preserve"><value>Είστε σίγουροι ότι θέλετε να διαγράψετε;</value></data>
+  <data name="NoDataFound" xml:space="preserve"><value>Δεν βρέθηκαν δεδομένα.</value></data>
+  <data name="InvalidCredentials" xml:space="preserve"><value>Λάθος όνομα χρήστη ή κωδικός.</value></data>
+
+  <!-- Login -->
+  <data name="Login" xml:space="preserve"><value>Σύνδεση</value></data>
+  <data name="Username" xml:space="preserve"><value>Όνομα Χρήστη</value></data>
+  <data name="Password" xml:space="preserve"><value>Κωδικός</value></data>
+  <data name="RememberMe" xml:space="preserve"><value>Να με θυμάσαι</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Είσοδος</value></data>
+  <data name="SignInToManage" xml:space="preserve"><value>Συνδεθείτε για διαχείριση προγραμμάτων</value></data>
+
+  <!-- Leave Additional -->
+  <data name="LeaveRequestsSubtitle" xml:space="preserve"><value>Διαχείριση αδειών και απουσιών νοσηλευτών</value></data>
+  <data name="AllNurses" xml:space="preserve"><value>Όλοι οι Νοσηλευτές</value></data>
+  <data name="All" xml:space="preserve"><value>Όλα</value></data>
+  <data name="NoLeaveRequests" xml:space="preserve"><value>Δεν υπάρχουν αιτήματα άδειας</value></data>
+  <data name="RecordLeaveWhenAbsent" xml:space="preserve"><value>Καταγράψτε άδεια όταν απουσιάζουν νοσηλευτές</value></data>
+  <data name="AddLeaveRecord" xml:space="preserve"><value>Προσθήκη νέας εγγραφής άδειας για νοσηλευτή</value></data>
+  <data name="SelectNurse" xml:space="preserve"><value>Επιλέξτε Νοσηλευτή</value></data>
+  <data name="Notes" xml:space="preserve"><value>Σημειώσεις</value></data>
+  <data name="LeaveTypes" xml:space="preserve"><value>Τύποι Άδειας</value></data>
+  <data name="SickDescription" xml:space="preserve"><value>Ιατρική άδεια λόγω ασθένειας</value></data>
+  <data name="VacationDescription" xml:space="preserve"><value>Προγραμματισμένη ετήσια άδεια</value></data>
+  <data name="PersonalDescription" xml:space="preserve"><value>Προσωπικό ρεπό</value></data>
+  <data name="MaternityDescription" xml:space="preserve"><value>Άδεια μητρότητας/πατρότητας</value></data>
+  <data name="UnpaidDescription" xml:space="preserve"><value>Άδεια άνευ αποδοχών</value></data>
+  <data name="EditLeave" xml:space="preserve"><value>Επεξεργασία Άδειας</value></data>
+  <data name="UpdateLeaveRecord" xml:space="preserve"><value>Ενημέρωση εγγραφής άδειας</value></data>
+  <data name="DeleteLeave" xml:space="preserve"><value>Διαγραφή Άδειας</value></data>
+
+  <!-- Schedule Additional -->
+  <data name="Legend" xml:space="preserve"><value>Υπόμνημα</value></data>
+  <data name="BorrowedFromOtherClinic" xml:space="preserve"><value>Δανεισμένος από άλλη κλινική</value></data>
+  <data name="ErrorMustFix" xml:space="preserve"><value>Σφάλμα (πρέπει να διορθωθεί)</value></data>
+  <data name="Warning" xml:space="preserve"><value>Προειδοποίηση</value></data>
+  <data name="GenerateWarning" xml:space="preserve"><value>Αυτό θα αντικαταστήσει όλες τις υπάρχουσες αναθέσεις για την επιλεγμένη περίοδο.</value></data>
+  <data name="DaysToGenerate" xml:space="preserve"><value>Ημέρες προς Δημιουργία</value></data>
+  <data name="Generate" xml:space="preserve"><value>Δημιουργία</value></data>
+  <data name="Loading" xml:space="preserve"><value>Φόρτωση</value></data>
+  <data name="NoNursesAvailable" xml:space="preserve"><value>Δεν υπάρχουν διαθέσιμοι νοσηλευτές</value></data>
+  <data name="Assign" xml:space="preserve"><value>Ανάθεση</value></data>
+  <data name="CouldNotAssignNurse" xml:space="preserve"><value>Δεν ήταν δυνατή η ανάθεση νοσηλευτή</value></data>
+  <data name="CannotGeneratePastDates" xml:space="preserve"><value>Δεν είναι δυνατή η δημιουργία προγράμματος για παρελθούσες ημερομηνίες. Η ημερομηνία έναρξης πρέπει να είναι σήμερα ή αργότερα.</value></data>
+
+  <!-- Head Nurse Settings -->
+  <data name="HeadNurseSettings" xml:space="preserve"><value>Ρυθμίσεις Προϊσταμένης</value></data>
+  <data name="AutoAssignHeadNurseMorning" xml:space="preserve"><value>Αυτόματη ανάθεση προϊσταμένης σε πρωινές βάρδιες τις εργάσιμες</value></data>
+  <data name="AutoAssignHeadNurseMorningHelp" xml:space="preserve"><value>Όταν είναι ενεργοποιημένο, η προϊσταμένη θα ανατίθεται αυτόματα στις πρωινές βάρδιες Δευτέρα-Παρασκευή</value></data>
+</root>
