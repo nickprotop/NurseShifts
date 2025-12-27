@@ -226,6 +226,12 @@
   <data name="DeleteConfirmation" xml:space="preserve"><value>Είστε σίγουροι ότι θέλετε να διαγράψετε;</value></data>
   <data name="NoDataFound" xml:space="preserve"><value>Δεν βρέθηκαν δεδομένα.</value></data>
   <data name="InvalidCredentials" xml:space="preserve"><value>Λάθος όνομα χρήστη ή κωδικός.</value></data>
+  <data name="PasswordMismatch" xml:space="preserve"><value>Ο νέος κωδικός και η επιβεβαίωση δεν ταιριάζουν.</value></data>
+  <data name="SettingsNotFound" xml:space="preserve"><value>Δεν βρέθηκαν ρυθμίσεις.</value></data>
+  <data name="IncorrectPassword" xml:space="preserve"><value>Ο τρέχων κωδικός είναι λάθος.</value></data>
+  <data name="SystemNotConfigured" xml:space="preserve"><value>Το σύστημα δεν έχει ρυθμιστεί.</value></data>
+  <data name="EndDateMustBeAfterStart" xml:space="preserve"><value>Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης.</value></data>
+  <data name="FailedToRemoveAssignment" xml:space="preserve"><value>Αποτυχία αφαίρεσης ανάθεσης.</value></data>
 
   <!-- Login -->
   <data name="Login" xml:space="preserve"><value>Σύνδεση</value></data>
@@ -272,4 +278,71 @@
   <data name="HeadNurseSettings" xml:space="preserve"><value>Ρυθμίσεις Προϊσταμένης</value></data>
   <data name="AutoAssignHeadNurseMorning" xml:space="preserve"><value>Αυτόματη ανάθεση προϊσταμένης σε πρωινές βάρδιες τις εργάσιμες</value></data>
   <data name="AutoAssignHeadNurseMorningHelp" xml:space="preserve"><value>Όταν είναι ενεργοποιημένο, η προϊσταμένη θα ανατίθεται αυτόματα στις πρωινές βάρδιες Δευτέρα-Παρασκευή</value></data>
+
+  <!-- Manual Assignments -->
+  <data name="ManualAssignment" xml:space="preserve"><value>Χειροκίνητη Ανάθεση</value></data>
+  <data name="AutoAssignment" xml:space="preserve"><value>Αυτόματη Ανάθεση</value></data>
+  <data name="ClickToLock" xml:space="preserve"><value>Κλικ για κλείδωμα (χειροκίνητη)</value></data>
+  <data name="ClickToUnlock" xml:space="preserve"><value>Κλικ για ξεκλείδωμα (αυτόματη)</value></data>
+  <data name="MarkAsManual" xml:space="preserve"><value>Χειροκίνητη Ανάθεση</value></data>
+  <data name="MarkAsManualHelp" xml:space="preserve"><value>Οι χειροκίνητες αναθέσεις διατηρούνται κατά την αυτόματη δημιουργία προγράμματος</value></data>
+  <data name="GenerateInfoManual" xml:space="preserve"><value>Οι χειροκίνητες αναθέσεις (με εικονίδιο κλειδώματος) θα διατηρηθούν. Μόνο οι αυτόματες αναθέσεις θα αντικατασταθούν.</value></data>
+  <data name="ConfirmRemoveManual" xml:space="preserve"><value>Αυτή είναι χειροκίνητη ανάθεση. Είστε σίγουροι ότι θέλετε να την αφαιρέσετε;</value></data>
+
+  <!-- AJAX Feedback -->
+  <data name="Updating" xml:space="preserve"><value>Ενημέρωση...</value></data>
+  <data name="UpdateSuccess" xml:space="preserve"><value>Ενημερώθηκε επιτυχώς</value></data>
+  <data name="UpdateFailed" xml:space="preserve"><value>Η ενημέρωση απέτυχε</value></data>
+
+  <!-- Schedule Navigation -->
+  <data name="Today" xml:space="preserve"><value>Σήμερα</value></data>
+  <data name="PreviousWeek" xml:space="preserve"><value>Προηγούμενο</value></data>
+  <data name="NextWeek" xml:space="preserve"><value>Επόμενο</value></data>
+
+  <!-- Export/Print -->
+  <data name="Export" xml:space="preserve"><value>Εξαγωγή</value></data>
+  <data name="ExportPdf" xml:space="preserve"><value>Εξαγωγή σε PDF</value></data>
+  <data name="ExportExcel" xml:space="preserve"><value>Εξαγωγή σε Excel</value></data>
+  <data name="Print" xml:space="preserve"><value>Εκτύπωση</value></data>
+
+  <!-- Workload -->
+  <data name="Workload" xml:space="preserve"><value>Φόρτος Εργασίας</value></data>
+  <data name="TotalHours" xml:space="preserve"><value>Συνολικές Ώρες</value></data>
+  <data name="OvertimeHours" xml:space="preserve"><value>Υπερωρίες</value></data>
+  <data name="ShowWorkload" xml:space="preserve"><value>Εμφάνιση Φόρτου</value></data>
+  <data name="HideWorkload" xml:space="preserve"><value>Απόκρυψη Φόρτου</value></data>
+
+  <!-- Auto-Fill / Regenerate -->
+  <data name="AutoFilled" xml:space="preserve"><value>Αυτόματη ενημέρωση προγράμματος</value></data>
+  <data name="Added" xml:space="preserve"><value>προστέθηκαν</value></data>
+  <data name="Removed" xml:space="preserve"><value>αφαιρέθηκαν</value></data>
+  <data name="RegenerateAll" xml:space="preserve"><value>Αναδημιουργία Όλων</value></data>
+  <data name="RegenerateAllWarning" xml:space="preserve"><value>Αυτό θα διαγράψει ΟΛΕΣ τις αυτόματες αναθέσεις και θα δημιουργήσει νέες από την αρχή. Χρησιμοποιήστε μόνο όταν θέλετε πλήρη επανεκκίνηση του προγράμματος.</value></data>
+  <data name="AutoFill" xml:space="preserve"><value>Αυτο-συμπλήρωση</value></data>
+  <data name="AutoFillHelp" xml:space="preserve"><value>Συμπλήρωση κενών βαρδιών με διαθέσιμες νοσηλεύτριες, σεβόμενοι τις χειροκίνητες αναθέσεις</value></data>
+  <data name="CannotAutoFillPastDates" xml:space="preserve"><value>Δεν είναι δυνατή η αυτο-συμπλήρωση παρελθοντικών ημερομηνιών</value></data>
+  <data name="ChangeAdded" xml:space="preserve"><value>Προστέθηκε {0} στο {1} στις {2}</value></data>
+  <data name="ChangeRemoved" xml:space="preserve"><value>Αφαιρέθηκε {0} από {1} στις {2}</value></data>
+  <data name="ChangeMarkedResponsible" xml:space="preserve"><value>Ορίστηκε {0} ως υπεύθυνος για {1} στις {2}</value></data>
+  <data name="ReasonUnavailable" xml:space="preserve"><value>μη διαθέσιμος</value></data>
+  <data name="ReasonReplacedBy" xml:space="preserve"><value>Αντικαταστάθηκε από {0}</value></data>
+
+  <!-- Week-based Scheduler -->
+  <data name="Week" xml:space="preserve"><value>Εβδομάδα</value></data>
+  <data name="Weeks" xml:space="preserve"><value>Εβδομάδες</value></data>
+  <data name="WeeksToGenerate" xml:space="preserve"><value>Εβδομάδες για Δημιουργία</value></data>
+
+  <!-- Unified Scheduling -->
+  <data name="AutoSchedule" xml:space="preserve"><value>Αυτόματος Προγραμματισμός</value></data>
+  <data name="AutoScheduleHelp" xml:space="preserve"><value>Αυτόματη συμπλήρωση βαρδιών, χορήγηση ρεπό αντισταθμίσεως και βελτιστοποίηση προγράμματος</value></data>
+  <data name="ClearAndRebuild" xml:space="preserve"><value>Εκκαθάριση &amp; Αναδημιουργία</value></data>
+  <data name="ClearAndRebuildWarning" xml:space="preserve"><value>Αυτό θα διαγράψει ΟΛΕΣ τις αυτόματες αναθέσεις και θα δημιουργήσει νέες από την αρχή.</value></data>
+  <data name="ClearAndRebuildInfoManual" xml:space="preserve"><value>Οι χειροκίνητες αναθέσεις (με εικονίδιο κλειδαριάς) θα διατηρηθούν.</value></data>
+  <data name="RecalculateCompDays" xml:space="preserve"><value>Επανυπολογισμός ρεπό αντισταθμίσεως</value></data>
+  <data name="RecalculateCompDaysHelp" xml:space="preserve"><value>Ανάκληση υπαρχόντων ρεπό και επανυπολογισμός από ιστορικό αναθέσεων</value></data>
+  <data name="ScheduleUpdated" xml:space="preserve"><value>Το πρόγραμμα ενημερώθηκε</value></data>
+  <data name="CompDaysGranted" xml:space="preserve"><value>ρεπό αντισταθμίσεως χορηγήθηκαν</value></data>
+  <data name="CompDaysRevoked" xml:space="preserve"><value>ρεπό αντισταθμίσεως ανακλήθηκαν</value></data>
+  <data name="CannotSchedulePastDates" xml:space="preserve"><value>Δεν είναι δυνατός ο προγραμματισμός παρελθοντικών ημερομηνιών. Η ημερομηνία έναρξης πρέπει να είναι σήμερα ή αργότερα.</value></data>
+  <data name="CannotClearPastDates" xml:space="preserve"><value>Δεν είναι δυνατή η εκκαθάριση παρελθοντικών ημερομηνιών. Η ημερομηνία έναρξης πρέπει να είναι σήμερα ή αργότερα.</value></data>
 </root>

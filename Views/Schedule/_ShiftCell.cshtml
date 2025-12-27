@@ -1,0 +1,78 @@
+@model NurseShifts.Models.ViewModels.ShiftCellViewModel
+@{
+    var coveragePercent = Model.RequiredNurses > 0
+        ? Math.Min(100, (int)(Model.Assignments.Count * 100.0 / Model.RequiredNurses))
+        : 100;
+    var coverageClass = coveragePercent >= 100 ? "full" : (coveragePercent > 0 ? "partial" : "empty");
+    var hasCriticalError = Model.Errors.Any();
+}
+<div class="shift-cell" data-clinic="@Model.ClinicId" data-date="@Model.Date.ToString("yyyy-MM-dd")" data-shift="@Model.ShiftType">
+    @if (Model.Assignments.Any())
+    {
+        <ul class="list-unstyled mb-1">
+            @foreach (var assignment in Model.Assignments)
+            {
+                <li class="d-flex align-items-center justify-content-between mb-1 assignment-item"
+                    data-assignment-id="@assignment.Id"
+                    data-is-manual="@assignment.IsManualAssignment.ToString().ToLower()">
+                    <span class="small">
+                        @if (assignment.IsManualAssignment)
+                        {
+                            <i class="bi bi-lock-fill text-primary toggle-manual" title="@Localizer["ManualAssignment"] - @Localizer["ClickToUnlock"]" style="cursor:pointer"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-unlock text-muted toggle-manual" title="@Localizer["AutoAssignment"] - @Localizer["ClickToLock"]" style="cursor:pointer"></i>
+                        }
+                        @if (assignment.IsResponsibleNurse)
+                        {
+                            <i class="bi bi-star-fill text-warning" title="@Localizer["ResponsibleNurse"]"></i>
+                        }
+                        @if (assignment.IsBorrowed)
+                        {
+                            <span class="badge bg-secondary badge-sm" title="@Localizer["Borrowed"]">B</span>
+                        }
+                        @assignment.Nurse?.ShortName
+                    </span>
+                    <button type="button" class="btn btn-link btn-sm text-danger p-0 remove-assignment"
+                            title="@Localizer["Delete"]">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </li>
+            }
+        </ul>
+    }
+
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="flex-grow-1 me-2">
+            <div class="coverage-progress" title="@Model.Assignments.Count / @Model.RequiredNurses @Localizer["Nurses"]">
+                <div class="coverage-progress-bar @coverageClass" style="width: @coveragePercent%"></div>
+            </div>
+        </div>
+        <small class="text-muted coverage-count">
+            @Model.Assignments.Count/@Model.RequiredNurses
+        </small>
+        <button type="button" class="btn btn-link btn-sm p-0 ms-1 add-nurse-btn"
+                title="@Localizer["AddNurseToShift"]">
+            <i class="bi bi-plus-circle"></i>
+        </button>
+    </div>
+
+    @if (Model.Errors.Any() || Model.Warnings.Any())
+    {
+        <div class="mt-1 validation-messages">
+            @foreach (var error in Model.Errors)
+            {
+                <div class="text-danger small validation-message" title="@error">
+                    <i class="bi bi-exclamation-circle"></i> @error
+                </div>
+            }
+            @foreach (var warning in Model.Warnings)
+            {
+                <div class="text-warning small validation-message" title="@warning">
+                    <i class="bi bi-exclamation-triangle"></i> @warning
+                </div>
+            }
+        </div>
+    }
+</div>

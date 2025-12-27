@@ -284,21 +284,23 @@ public class NurseAvailabilityServiceTests
         // Arrange
         using var context = TestDbContextFactory.CreateInMemory();
         var clinic = TestDataBuilder.CreateClinic(id: 1);
+        // Nurse 1: 40 contracted, nurse 2: also 40 contracted
         var nurse1 = TestDataBuilder.CreateNurse(id: 1, primaryClinicId: 1, contractedHours: 40);
         var nurse2 = TestDataBuilder.CreateNurse(id: 2, primaryClinicId: 1, contractedHours: 40);
 
-        // Nurse 1 has 36 hours this week (below contracted)
-        // Nurse 2 has 40 hours this week (at contracted - would go overtime)
-        var weekStart = Today.AddDays(-(int)Today.DayOfWeek + 1);
+        // Use a fixed date for predictable week calculation
+        // Wednesday Jan 8, 2025 -> week starts Monday Jan 6
+        var testDate = new DateOnly(2025, 1, 8);
+        var weekStart = new DateOnly(2025, 1, 6); // Monday
 
-        // Add 4 shifts for nurse 1 (32 hours) - well below contracted
-        for (int i = 0; i < 4; i++)
+        // Nurse 1: 3 shifts (24 hours) - well below contracted
+        for (int i = 0; i < 3; i++)
         {
             context.ShiftAssignments.Add(TestDataBuilder.CreateAssignment(
                 id: i + 1, nurseId: 1, clinicId: 1, date: weekStart.AddDays(i)));
         }
 
-        // Add 5 shifts for nurse 2 (40 hours) - at contracted
+        // Nurse 2: 5 shifts (40 hours) - at contracted, adding more would be overtime
         for (int i = 0; i < 5; i++)
         {
             context.ShiftAssignments.Add(TestDataBuilder.CreateAssignment(
@@ -311,17 +313,18 @@ public class NurseAvailabilityServiceTests
 
         var service = new NurseAvailabilityService(context);
 
-        // Act - get availability for a day without existing assignments
-        var testDate = weekStart.AddDays(6); // Sunday
-        var result = await service.GetAvailableNursesAsync(1, testDate, ShiftType.Morning);
+        // Act - get availability for Saturday (no existing assignment for either nurse)
+        var saturday = weekStart.AddDays(5);
+        var result = await service.GetAvailableNursesAsync(1, saturday, ShiftType.Morning);
 
         // Assert
         var belowHours = result.First(a => a.Nurse.Id == 1);
-        var atHours = result.First(a => a.Nurse.Id == 2);
+        var atContracted = result.First(a => a.Nurse.Id == 2);
 
-        // Nurse 1 gets +3 for being below contracted
-        // Nurse 2 gets -4 for going into overtime
-        belowHours.Score.Should().BeGreaterThan(atHours.Score);
+        // Nurse 1: 24 hours, below contracted (+3), won't go overtime (no penalty)
+        // Nurse 2: 40 hours, not below contracted (no +3), adding 8 = 48 > 40 (overtime penalty -4)
+        // Score difference should be: 3 - (-4) = 7
+        belowHours.Score.Should().BeGreaterThan(atContracted.Score);
     }
 
     [Fact]

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using NurseShifts.Data;
 using NurseShifts.Models;
 
@@ -10,10 +11,12 @@ namespace NurseShifts.Controllers;
 public class SettingsController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public SettingsController(AppDbContext context)
+    public SettingsController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
     {
         _context = context;
+        _localizer = localizer;
     }
 
     public async Task<IActionResult> Index()
@@ -52,7 +55,7 @@ public class SettingsController : Controller
                     new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
                 );
 
-                TempData["Success"] = "Settings saved successfully.";
+                TempData["Success"] = _localizer["SavedSuccessfully"].Value;
             }
             return RedirectToAction(nameof(Index));
         }
@@ -71,27 +74,27 @@ public class SettingsController : Controller
     {
         if (newPassword != confirmPassword)
         {
-            ModelState.AddModelError(string.Empty, "New password and confirmation do not match.");
+            ModelState.AddModelError(string.Empty, _localizer["PasswordMismatch"]);
             return View();
         }
 
         var settings = await _context.SystemSettings.FirstOrDefaultAsync();
         if (settings == null)
         {
-            ModelState.AddModelError(string.Empty, "Settings not found.");
+            ModelState.AddModelError(string.Empty, _localizer["SettingsNotFound"]);
             return View();
         }
 
         if (!BCrypt.Net.BCrypt.Verify(currentPassword, settings.AdminPasswordHash))
         {
-            ModelState.AddModelError(string.Empty, "Current password is incorrect.");
+            ModelState.AddModelError(string.Empty, _localizer["IncorrectPassword"]);
             return View();
         }
 
         settings.AdminPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
         await _context.SaveChangesAsync();
 
-        TempData["Success"] = "Password changed successfully.";
+        TempData["Success"] = _localizer["SavedSuccessfully"].Value;
         return RedirectToAction(nameof(Index));
     }
 

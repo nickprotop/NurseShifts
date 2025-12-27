@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using NurseShifts.Data;
 using NurseShifts.Models;
 
@@ -11,10 +12,12 @@ namespace NurseShifts.Controllers;
 public class LeaveController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public LeaveController(AppDbContext context)
+    public LeaveController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
     {
         _context = context;
+        _localizer = localizer;
     }
 
     public async Task<IActionResult> Index(LeaveStatus? status, int? nurseId)
@@ -57,7 +60,7 @@ public class LeaveController : Controller
     {
         if (leave.EndDate < leave.StartDate)
         {
-            ModelState.AddModelError("EndDate", "End date must be after start date.");
+            ModelState.AddModelError("EndDate", _localizer["EndDateMustBeAfterStart"]);
         }
 
         if (ModelState.IsValid)
@@ -97,7 +100,7 @@ public class LeaveController : Controller
 
         if (leave.EndDate < leave.StartDate)
         {
-            ModelState.AddModelError("EndDate", "End date must be after start date.");
+            ModelState.AddModelError("EndDate", _localizer["EndDateMustBeAfterStart"]);
         }
 
         if (ModelState.IsValid)

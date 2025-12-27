@@ -62,6 +62,7 @@ builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<INurseAvailabilityService, NurseAvailabilityService>();
 builder.Services.AddScoped<IOvertimeService, OvertimeService>();
+builder.Services.AddScoped<IExportService, ExportService>();
 
 var app = builder.Build();
 

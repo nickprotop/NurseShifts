@@ -1,0 +1,30 @@
+@model NurseShifts.Models.ViewModels.WorkloadSummaryViewModel
+<div class="workload-panel p-3">
+    @if (!Model.Workloads.Any())
+    {
+        <p class="text-muted text-center mb-0">@Localizer["NoDataAvailable"]</p>
+    }
+    else
+    {
+        @foreach (var workload in Model.Workloads)
+        {
+            <div class="workload-item">
+                <div class="workload-nurse-name" title="@workload.NurseName">
+                    @workload.NurseName
+                </div>
+                <div class="workload-bar-container">
+                    <div class="workload-bar @workload.Status"
+                         style="width: @Math.Min(100, workload.PercentageOfContract)%"
+                         title="@workload.TotalHours h / @workload.ContractedHours h (@workload.PercentageOfContract%)">
+                    </div>
+                </div>
+                <div class="workload-hours">
+                    <span class="@(workload.OvertimeHours > 0 ? "text-warning fw-bold" : "")">
+                        @workload.TotalHours h
+                    </span>
+                    <small class="text-muted">/ @workload.ContractedHours h</small>
+                </div>
+            </div>
+        }
+    }
+</div>

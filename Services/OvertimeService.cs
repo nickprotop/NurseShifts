@@ -135,4 +135,110 @@ public class OvertimeService : IOvertimeService
         var diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
         return date.AddDays(-diff);
     }
+
+    public async Task<bool> HasCompDayInWeekAsync(int nurseId, DateOnly weekStart)
+    {
+        var weekEnd = weekStart.AddDays(6);
+        return await _context.CompensatoryTimeOffs
+            .AnyAsync(cto => cto.NurseId == nurseId &&
+                            cto.Date >= weekStart &&
+                            cto.Date <= weekEnd);
+    }
+
+    public async Task ConsumeOvertimeAsync(int nurseId, int hours)
+    {
+        // Find oldest week with positive balance and consume from there
+        var balances = await _context.OvertimeBalances
+            .Where(ob => ob.NurseId == nurseId && ob.BalanceHours > 0)
+            .OrderBy(ob => ob.WeekStartDate)
+            .ToListAsync();
+
+        var remaining = hours;
+        foreach (var balance in balances)
+        {
+            if (remaining <= 0) break;
+
+            var toConsume = Math.Min(balance.BalanceHours, remaining);
+            balance.CompensatoryHoursUsed += toConsume;
+            remaining -= toConsume;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> RevokeCompDayAsync(int compTimeOffId)
+    {
+        var compDay = await _context.CompensatoryTimeOffs.FindAsync(compTimeOffId);
+        if (compDay == null) return false;
+
+        // Restore the hours to the relevant week's balance
+        var weekStart = GetWeekStart(compDay.Date);
+        var balance = await _context.OvertimeBalances
+            .FirstOrDefaultAsync(ob => ob.NurseId == compDay.NurseId && ob.WeekStartDate == weekStart);
+
+        if (balance != null)
+        {
+            balance.CompensatoryHoursUsed -= compDay.HoursCompensated;
+            if (balance.CompensatoryHoursUsed < 0)
+                balance.CompensatoryHoursUsed = 0;
+        }
+
+        _context.CompensatoryTimeOffs.Remove(compDay);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task RecalculateFromAssignmentsAsync(int nurseId, DateOnly startDate, DateOnly endDate)
+    {
+        var nurse = await _context.Nurses.FindAsync(nurseId);
+        if (nurse == null) return;
+
+        // Get all assignments in the range
+        var assignments = await _context.ShiftAssignments
+            .Where(sa => sa.NurseId == nurseId &&
+                        sa.Date >= startDate &&
+                        sa.Date <= endDate &&
+                        sa.Status != AssignmentStatus.Cancelled)
+            .ToListAsync();
+
+        // Get shift configurations for duration info
+        var configs = await _context.ShiftConfigurations.ToListAsync();
+
+        // Group assignments by week and calculate hours
+        var weeklyHours = new Dictionary<DateOnly, int>();
+        foreach (var assignment in assignments)
+        {
+            var weekStart = GetWeekStart(assignment.Date);
+            var duration = configs
+                .FirstOrDefault(c => c.ShiftType == assignment.ShiftType &&
+                                    (c.DayOfWeek == assignment.Date.DayOfWeek || c.DayOfWeek == null))
+                ?.ShiftDurationHours ?? 8;
+
+            if (!weeklyHours.ContainsKey(weekStart))
+                weeklyHours[weekStart] = 0;
+            weeklyHours[weekStart] += duration;
+        }
+
+        // Update or create balance records for each week
+        foreach (var (weekStart, hours) in weeklyHours)
+        {
+            var balance = await _context.OvertimeBalances
+                .FirstOrDefaultAsync(ob => ob.NurseId == nurseId && ob.WeekStartDate == weekStart);
+
+            if (balance == null)
+            {
+                balance = new OvertimeBalance
+                {
+                    NurseId = nurseId,
+                    WeekStartDate = weekStart,
+                    ContractedHours = nurse.ContractedHoursPerWeek
+                };
+                _context.OvertimeBalances.Add(balance);
+            }
+
+            balance.ActualHours = hours;
+        }
+
+        await _context.SaveChangesAsync();
+    }
 }

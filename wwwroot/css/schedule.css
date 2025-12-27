@@ -1,0 +1,414 @@
+/**
+ * Schedule Page Styles
+ * Extracted from inline styles and enhanced for better maintainability
+ */
+
+/* ========================================
+   Schedule Table
+   ======================================== */
+
+.schedule-table td {
+    vertical-align: top;
+    padding: 0.5rem;
+}
+
+.schedule-table th {
+    min-width: 120px;
+}
+
+/* Shift cell container */
+.shift-cell {
+    min-height: 60px;
+}
+
+/* ========================================
+   Assignment Items
+   ======================================== */
+
+.assignment-item {
+    position: relative;
+}
+
+/* Hide remove button by default, show on hover */
+.assignment-item .remove-assignment {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.assignment-item:hover .remove-assignment {
+    opacity: 1;
+}
+
+/* Manual/Auto toggle icons */
+.assignment-item .toggle-manual {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.assignment-item .toggle-manual:hover {
+    transform: scale(1.2);
+}
+
+/* ========================================
+   Coverage Indicators
+   ======================================== */
+
+.coverage-count {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Future: Coverage progress bar */
+.coverage-progress {
+    height: 4px;
+    background-color: #e9ecef;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.coverage-progress-bar {
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+}
+
+.coverage-progress-bar.full {
+    background-color: #198754;
+}
+
+.coverage-progress-bar.partial {
+    background-color: #ffc107;
+}
+
+.coverage-progress-bar.empty {
+    background-color: #dc3545;
+}
+
+/* ========================================
+   Validation Indicators
+   ======================================== */
+
+/* Error pulse animation */
+@keyframes error-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0);
+    }
+}
+
+.table-danger.has-critical-error {
+    animation: error-pulse 2s infinite;
+}
+
+/* Validation messages */
+.validation-message {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.validation-message i {
+    margin-right: 0.25rem;
+}
+
+/* ========================================
+   Toolbar & Navigation
+   ======================================== */
+
+.schedule-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.schedule-nav-btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.schedule-nav-btn i {
+    font-size: 1rem;
+}
+
+/* Days selector active state */
+.days-selector .btn.active {
+    font-weight: 600;
+}
+
+/* ========================================
+   Loading States
+   ======================================== */
+
+.cell-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.cell-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cell-loading .spinner-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ========================================
+   Toast Notifications
+   ======================================== */
+
+.schedule-toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1055;
+}
+
+/* ========================================
+   Weekend Highlighting
+   ======================================== */
+
+.weekend-column {
+    background-color: rgba(var(--bs-light-rgb), 0.5) !important;
+}
+
+/* ========================================
+   Legend
+   ======================================== */
+
+.schedule-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.schedule-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 768px) {
+    .schedule-table {
+        font-size: 0.875rem;
+    }
+
+    .schedule-table th {
+        min-width: 80px;
+    }
+
+    .shift-cell {
+        min-height: 50px;
+    }
+
+    .schedule-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .schedule-legend {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* ========================================
+   Workload Panel (Phase 5)
+   ======================================== */
+
+.workload-panel {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.workload-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.workload-item:last-child {
+    border-bottom: none;
+}
+
+.workload-nurse-name {
+    flex: 0 0 150px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workload-bar-container {
+    flex: 1;
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.workload-bar {
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+}
+
+.workload-bar.on-target {
+    background-color: #198754;
+}
+
+.workload-bar.overtime {
+    background-color: #ffc107;
+}
+
+.workload-bar.excessive {
+    background-color: #dc3545;
+}
+
+.workload-hours {
+    flex: 0 0 80px;
+    text-align: right;
+    font-size: 0.875rem;
+}
+
+/* ========================================
+   Temporal Awareness (Today/Past/Future)
+   ======================================== */
+
+/* Today column - prominent blue highlight */
+.schedule-table th.is-today,
+.schedule-table td.is-today {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+    border-left: 3px solid #0d6efd !important;
+    border-right: 3px solid #0d6efd !important;
+}
+
+.schedule-table th.is-today {
+    background-color: rgba(13, 110, 253, 0.15) !important;
+    border-top: 3px solid #0d6efd !important;
+}
+
+.schedule-table th.is-today .small {
+    color: #0d6efd !important;
+    font-weight: 600;
+}
+
+/* Past days - dimmed appearance (but still editable for manual corrections) */
+.schedule-table th.is-past,
+.schedule-table td.is-past {
+    background-color: #f8f9fa !important;
+    opacity: 0.8;
+}
+
+/* Future days - subtle indication */
+.schedule-table th.is-future,
+.schedule-table td.is-future {
+    /* Default - no special styling needed */
+}
+
+/* ========================================
+   Manual Assignment Styling
+   ======================================== */
+
+/* Manual assignments get a subtle blue left border and background */
+.assignment-item[data-is-manual="true"] {
+    background-color: rgba(13, 110, 253, 0.08);
+    border-left: 3px solid #0d6efd;
+    padding-left: 0.5rem;
+    margin-left: -0.25rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.assignment-item[data-is-manual="true"] .bi-lock-fill {
+    color: #0d6efd !important;
+}
+
+/* ========================================
+   Status Badges (Coverage)
+   ======================================== */
+
+.shift-status-badge {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 3px;
+    margin-bottom: 0.25rem;
+}
+
+.shift-status-badge.status-full {
+    background-color: #198754;
+    color: white;
+}
+
+.shift-status-badge.status-partial {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.shift-status-badge.status-empty {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ========================================
+   Empty Shift Pulse Animation
+   ======================================== */
+
+@keyframes empty-shift-pulse {
+    0%, 100% {
+        box-shadow: inset 0 0 0 0 rgba(220, 53, 69, 0.3);
+    }
+    50% {
+        box-shadow: inset 0 0 0 3px rgba(220, 53, 69, 0.3);
+    }
+}
+
+.schedule-table td.shift-empty {
+    animation: empty-shift-pulse 2s ease-in-out infinite;
+}
+
+.schedule-table td.shift-empty:not(.is-past) {
+    background-color: rgba(220, 53, 69, 0.05) !important;
+}
+
+/* ========================================
+   Responsible Nurse Highlight
+   ======================================== */
+
+.assignment-item.is-responsible {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-radius: 4px;
+    padding: 0.15rem 0.25rem;
+    margin: -0.15rem -0.25rem;
+}
+
+/* ========================================
+   Week Separator (for 14/28 day views)
+   ======================================== */
+
+.schedule-table th.week-start:not(:first-child),
+.schedule-table td.week-start:not(:first-child) {
+    border-left: 2px solid #6c757d !important;
+}

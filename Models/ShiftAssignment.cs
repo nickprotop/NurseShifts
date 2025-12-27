@@ -37,6 +37,9 @@ public class ShiftAssignment
     [Display(Name = "Status")]
     public AssignmentStatus Status { get; set; } = AssignmentStatus.Scheduled;
 
+    [Display(Name = "Manual Assignment")]
+    public bool IsManualAssignment { get; set; } = false;
+
     [StringLength(500)]
     [Display(Name = "Notes")]
     public string? Notes { get; set; }

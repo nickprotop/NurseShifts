@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using NurseShifts.Data;
+using NurseShifts.Models;
 using NurseShifts.Models.ViewModels;
 using System.Security.Claims;
 
@@ -12,10 +14,12 @@ namespace NurseShifts.Controllers;
 public class AccountController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public AccountController(AppDbContext context)
+    public AccountController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
     {
         _context = context;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -41,7 +45,7 @@ public class AccountController : Controller
         var settings = await _context.SystemSettings.FirstOrDefaultAsync();
         if (settings == null)
         {
-            ModelState.AddModelError(string.Empty, "System not configured.");
+            ModelState.AddModelError(string.Empty, _localizer["SystemNotConfigured"]);
             return View(model);
         }
 
@@ -73,7 +77,7 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid username or password.");
+        ModelState.AddModelError(string.Empty, _localizer["InvalidCredentials"]);
         return View(model);
     }
 

@@ -1,7 +1,27 @@
 @model NurseShifts.Models.ViewModels.ScheduleViewModel
 @{
     ViewData["Title"] = Localizer["Schedule"];
+
+    // Build localized strings JSON for JavaScript
+    var jsStrings = new Dictionary<string, string>
+    {
+        { "loading", Localizer["Loading"].Value },
+        { "noNursesAvailable", Localizer["NoNursesAvailable"].Value },
+        { "markAsManual", Localizer["MarkAsManual"].Value },
+        { "markAsManualHelp", Localizer["MarkAsManualHelp"].Value },
+        { "borrowed", Localizer["Borrowed"].Value },
+        { "canHandleResponsibility", Localizer["CanHandleResponsibility"].Value },
+        { "assign", Localizer["Assign"].Value },
+        { "assignAsResponsible", Localizer["ResponsibleNurse"].Value },
+        { "couldNotAssignNurse", Localizer["CouldNotAssignNurse"].Value },
+        { "confirmRemoveManual", Localizer["ConfirmRemoveManual"].Value },
+        { "updateFailed", Localizer["UpdateFailed"].Value },
+        { "updating", Localizer["Updating"].Value },
+        { "updateSuccess", Localizer["UpdateSuccess"].Value }
+    };
 }
+
+<div id="schedule-container" data-strings='@System.Text.Json.JsonSerializer.Serialize(jsStrings)'>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -12,6 +32,15 @@
     </div>
 </div>
 
+@{
+    // Navigation: move by weeks
+    var prevDate = Model.StartDate.AddDays(-Model.Weeks * 7);
+    var nextDate = Model.StartDate.AddDays(Model.Weeks * 7);
+    // Today: go to Monday of current week
+    var todayDate = DateOnly.FromDateTime(DateTime.Today);
+    var daysFromMonday = ((int)todayDate.DayOfWeek - 1 + 7) % 7;
+    var currentWeekMonday = todayDate.AddDays(-daysFromMonday);
+}
 <div class="card mb-3">
     <div class="card-body py-2">
         <form method="get" class="row g-2 align-items-center">
@@ -24,30 +53,113 @@
                 </select>
             </div>
             <div class="col-auto">
+                <div class="btn-group btn-group-sm">
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@prevDate.ToString("yyyy-MM-dd")" asp-route-weeks="@Model.Weeks"
+                       class="btn btn-outline-secondary" title="@Localizer["PreviousWeek"]">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@currentWeekMonday.ToString("yyyy-MM-dd")" asp-route-weeks="@Model.Weeks"
+                       class="btn btn-outline-secondary">
+                        @Localizer["Today"]
+                    </a>
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@nextDate.ToString("yyyy-MM-dd")" asp-route-weeks="@Model.Weeks"
+                       class="btn btn-outline-secondary" title="@Localizer["NextWeek"]">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-auto">
                 <input type="date" name="startDate" class="form-control form-control-sm"
                        value="@Model.StartDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
             </div>
             <div class="col-auto">
                 <div class="btn-group btn-group-sm">
                     <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
-                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-days="7"
-                       class="btn @(Model.Days == 7 ? "btn-primary" : "btn-outline-primary")">7 @Localizer["Days"]</a>
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-weeks="1"
+                       class="btn @(Model.Weeks == 1 ? "btn-primary" : "btn-outline-primary")">1 @Localizer["Week"]</a>
                     <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
-                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-days="14"
-                       class="btn @(Model.Days == 14 ? "btn-primary" : "btn-outline-primary")">14 @Localizer["Days"]</a>
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-weeks="2"
+                       class="btn @(Model.Weeks == 2 ? "btn-primary" : "btn-outline-primary")">2 @Localizer["Weeks"]</a>
                     <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
-                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-days="28"
-                       class="btn @(Model.Days == 28 ? "btn-primary" : "btn-outline-primary")">28 @Localizer["Days"]</a>
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-weeks="3"
+                       class="btn @(Model.Weeks == 3 ? "btn-primary" : "btn-outline-primary")">3 @Localizer["Weeks"]</a>
+                    <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                       asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-weeks="4"
+                       class="btn @(Model.Weeks == 4 ? "btn-primary" : "btn-outline-primary")">4 @Localizer["Weeks"]</a>
                 </div>
             </div>
             <div class="col-auto ms-auto">
-                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#generateModal">
-                    <i class="bi bi-magic me-1"></i>@Localizer["AutoGenerate"]
+                <div class="btn-group btn-group-sm">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-download me-1"></i>@Localizer["Export"]
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="javascript:window.print()">
+                                    <i class="bi bi-printer me-1"></i>@Localizer["Print"]
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" asp-action="ExportPdf" asp-route-clinicId="@Model.ClinicId"
+                                   asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-weeks="@Model.Weeks">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>@Localizer["ExportPdf"]
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-action="ExportExcel" asp-route-clinicId="@Model.ClinicId"
+                                   asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-weeks="@Model.Weeks">
+                                    <i class="bi bi-file-earmark-excel me-1"></i>@Localizer["ExportExcel"]
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <form asp-action="Schedule" method="post" class="d-inline">
+                    <input type="hidden" name="clinicId" value="@Model.ClinicId" />
+                    <input type="hidden" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                    <input type="hidden" name="weeks" value="@Model.Weeks" />
+                    <button type="submit" class="btn btn-primary btn-sm" title="@Localizer["AutoScheduleHelp"]">
+                        <i class="bi bi-magic me-1"></i>@Localizer["AutoSchedule"]
+                    </button>
+                </form>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#clearRebuildModal">
+                    <i class="bi bi-arrow-repeat me-1"></i>@Localizer["ClearAndRebuild"]
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+@if (ViewBag.ScheduleResult != null)
+{
+    var scheduleResult = (NurseShifts.Services.ScheduleResult)ViewBag.ScheduleResult;
+    <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
+        <i class="bi bi-info-circle me-1"></i>
+        <strong>@Localizer["ScheduleUpdated"]:</strong>
+        @if (scheduleResult.AssignmentsAdded > 0)
+        {
+            <span class="me-2">+@scheduleResult.AssignmentsAdded @Localizer["Added"]</span>
+        }
+        @if (scheduleResult.AssignmentsRemoved > 0)
+        {
+            <span class="text-danger me-2">-@scheduleResult.AssignmentsRemoved @Localizer["Removed"]</span>
+        }
+        @if (scheduleResult.CompDaysGranted > 0)
+        {
+            <span class="text-success me-2">🏖️ @scheduleResult.CompDaysGranted @Localizer["CompDaysGranted"]</span>
+        }
+        @if (scheduleResult.CompDaysRevoked > 0)
+        {
+            <span class="text-warning">↩️ @scheduleResult.CompDaysRevoked @Localizer["CompDaysRevoked"]</span>
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 @if (TempData["Error"] != null)
 {
@@ -67,9 +179,17 @@
                     @foreach (var day in Model.DaySchedules)
                     {
                         var isWeekend = day.Date.DayOfWeek == DayOfWeek.Saturday || day.Date.DayOfWeek == DayOfWeek.Sunday;
-                        <th class="text-center @(isWeekend ? "bg-light" : "")" style="min-width: 120px;">
+                        var isToday = day.Date == todayDate;
+                        var isPast = day.Date < todayDate;
+                        var isWeekStart = day.Date.DayOfWeek == DayOfWeek.Monday;
+                        var temporalClass = isToday ? "is-today" : (isPast ? "is-past" : "is-future");
+                        <th class="text-center @(isWeekend ? "bg-light" : "") @temporalClass @(isWeekStart ? "week-start" : "")" style="min-width: 120px;">
                             <div class="small text-muted">@day.Date.DayOfWeek.ToString().Substring(0, 3)</div>
                             <div>@day.Date.ToString("MMM d")</div>
+                            @if (isToday)
+                            {
+                                <span class="badge bg-primary" style="font-size: 0.6rem;">@Localizer["Today"]</span>
+                            }
                         </th>
                     }
                 </tr>
@@ -108,25 +228,51 @@
                         {
                             var shift = day.Shifts.FirstOrDefault(s => s.ShiftType == shiftType);
                             var isWeekend = day.Date.DayOfWeek == DayOfWeek.Saturday || day.Date.DayOfWeek == DayOfWeek.Sunday;
+                            var isToday = day.Date == todayDate;
+                            var isPast = day.Date < todayDate;
+                            var isWeekStart = day.Date.DayOfWeek == DayOfWeek.Monday;
+                            var temporalClass = isToday ? "is-today" : (isPast ? "is-past" : "is-future");
                             var cellClass = "";
                             if (shift != null && !shift.IsValid)
                             {
                                 cellClass = shift.Errors.Any() ? "table-danger" : "table-warning";
                             }
-                            <td class="@cellClass @(isWeekend ? "bg-light bg-opacity-50" : "")"
+                            var isShiftEmpty = shift != null && shift.RequiredNurses > 0 && shift.Assignments.Count == 0;
+                            <td class="@cellClass @(isWeekend ? "bg-light bg-opacity-50" : "") @temporalClass @(isWeekStart ? "week-start" : "") @(isShiftEmpty && !isPast ? "shift-empty" : "")"
                                 data-clinic="@Model.ClinicId" data-date="@day.Date.ToString("yyyy-MM-dd")" data-shift="@shiftType">
 
                                 @if (shift != null)
                                 {
                                     <div class="shift-cell">
+                                        @* Status Badge *@
+                                        @{
+                                            var statusClass = shift.Assignments.Count >= shift.RequiredNurses ? "status-full"
+                                                : (shift.Assignments.Count > 0 ? "status-partial" : "status-empty");
+                                            var statusText = shift.Assignments.Count >= shift.RequiredNurses ? "OK"
+                                                : (shift.Assignments.Count > 0 ? $"-{shift.RequiredNurses - shift.Assignments.Count}" : "EMPTY");
+                                        }
+                                        @if (shift.RequiredNurses > 0)
+                                        {
+                                            <span class="shift-status-badge @statusClass">@statusText</span>
+                                        }
+
                                         @if (shift.Assignments.Any())
                                         {
                                             <ul class="list-unstyled mb-1">
                                                 @foreach (var assignment in shift.Assignments)
                                                 {
-                                                    <li class="d-flex align-items-center justify-content-between mb-1 assignment-item"
-                                                        data-assignment-id="@assignment.Id">
+                                                    <li class="d-flex align-items-center justify-content-between mb-1 assignment-item @(assignment.IsResponsibleNurse ? "is-responsible" : "")"
+                                                        data-assignment-id="@assignment.Id"
+                                                        data-is-manual="@assignment.IsManualAssignment.ToString().ToLower()">
                                                         <span class="small">
+                                                            @if (assignment.IsManualAssignment)
+                                                            {
+                                                                <i class="bi bi-lock-fill text-primary toggle-manual" title="@Localizer["ManualAssignment"] - @Localizer["ClickToUnlock"]" style="cursor:pointer"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="bi bi-unlock text-muted toggle-manual" title="@Localizer["AutoAssignment"] - @Localizer["ClickToLock"]" style="cursor:pointer"></i>
+                                                            }
                                                             @if (assignment.IsResponsibleNurse)
                                                             {
                                                                 <i class="bi bi-star-fill text-warning" title="@Localizer["ResponsibleNurse"]"></i>
@@ -146,11 +292,22 @@
                                             </ul>
                                         }
 
+                                        @{
+                                            var coveragePercent = shift.RequiredNurses > 0
+                                                ? Math.Min(100, (int)(shift.Assignments.Count * 100.0 / shift.RequiredNurses))
+                                                : 100;
+                                            var coverageClass = coveragePercent >= 100 ? "full" : (coveragePercent > 0 ? "partial" : "empty");
+                                        }
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <small class="text-muted">
-                                                @shift.Assignments.Count / @shift.RequiredNurses
+                                            <div class="flex-grow-1 me-2">
+                                                <div class="coverage-progress" title="@shift.Assignments.Count / @shift.RequiredNurses @Localizer["Nurses"]">
+                                                    <div class="coverage-progress-bar @coverageClass" style="width: @coveragePercent%"></div>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted coverage-count">
+                                                @shift.Assignments.Count/@shift.RequiredNurses
                                             </small>
-                                            <button type="button" class="btn btn-link btn-sm p-0 add-nurse-btn"
+                                            <button type="button" class="btn btn-link btn-sm p-0 ms-1 add-nurse-btn"
                                                     title="@Localizer["AddNurseToShift"]">
                                                 <i class="bi bi-plus-circle"></i>
                                             </button>
@@ -158,16 +315,16 @@
 
                                         @if (shift.Errors.Any() || shift.Warnings.Any())
                                         {
-                                            <div class="mt-1">
+                                            <div class="mt-1 validation-messages">
                                                 @foreach (var error in shift.Errors)
                                                 {
-                                                    <div class="text-danger small">
+                                                    <div class="text-danger small validation-message" title="@error">
                                                         <i class="bi bi-exclamation-circle"></i> @error
                                                     </div>
                                                 }
                                                 @foreach (var warning in shift.Warnings)
                                                 {
-                                                    <div class="text-warning small">
+                                                    <div class="text-warning small validation-message" title="@warning">
                                                         <i class="bi bi-exclamation-triangle"></i> @warning
                                                     </div>
                                                 }
@@ -184,9 +341,39 @@
     </div>
 </div>
 
+<!-- Workload Panel -->
+<div class="card mt-3" id="workloadCard">
+    <div class="card-header d-flex justify-content-between align-items-center py-2">
+        <h6 class="mb-0">
+            <i class="bi bi-bar-chart me-1"></i>@Localizer["Workload"]
+        </h6>
+        <button class="btn btn-sm btn-link p-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#workloadContent" aria-expanded="false" id="workloadToggle">
+            <span class="show-text">@Localizer["ShowWorkload"]</span>
+            <span class="hide-text" style="display:none">@Localizer["HideWorkload"]</span>
+            <i class="bi bi-chevron-down"></i>
+        </button>
+    </div>
+    <div class="collapse" id="workloadContent"
+         data-clinic="@Model.ClinicId"
+         data-start-date="@Model.StartDate.ToString("yyyy-MM-dd")"
+         data-weeks="@Model.Weeks">
+        <div class="card-body py-2">
+            <div id="workloadPanelContent">
+                <div class="text-center py-3">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                    @Localizer["Loading"]...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card mt-3">
     <div class="card-body">
         <h6>@Localizer["Legend"]</h6>
+        <span class="me-3"><i class="bi bi-lock-fill text-primary"></i> @Localizer["ManualAssignment"]</span>
+        <span class="me-3"><i class="bi bi-unlock text-muted"></i> @Localizer["AutoAssignment"]</span>
         <span class="me-3"><i class="bi bi-star-fill text-warning"></i> @Localizer["ResponsibleNurse"]</span>
         <span class="me-3"><span class="badge bg-secondary">B</span> @Localizer["BorrowedFromOtherClinic"]</span>
         <span class="me-3 text-danger"><i class="bi bi-exclamation-circle"></i> @Localizer["ErrorMustFix"]</span>
@@ -194,19 +381,23 @@
     </div>
 </div>
 
-<!-- Generate Modal -->
-<div class="modal fade" id="generateModal" tabindex="-1">
+<!-- Clear & Rebuild Modal -->
+<div class="modal fade" id="clearRebuildModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-magic me-2"></i>@Localizer["AutoGenerate"]</h5>
+            <div class="modal-header bg-danger bg-opacity-25">
+                <h5 class="modal-title"><i class="bi bi-arrow-repeat me-2"></i>@Localizer["ClearAndRebuild"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form asp-action="Generate" method="post">
+            <form asp-action="ClearAndRebuild" method="post">
                 <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle me-1"></i>
-                        @Localizer["GenerateWarning"]
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        <strong>@Localizer["Warning"]:</strong> @Localizer["ClearAndRebuildWarning"]
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        @Localizer["ClearAndRebuildInfoManual"]
                     </div>
 
                     <input type="hidden" name="clinicId" value="@Model.ClinicId" />
@@ -218,18 +409,27 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">@Localizer["DaysToGenerate"]</label>
-                        <select name="days" class="form-select">
-                            <option value="7">7 @Localizer["Days"]</option>
-                            <option value="14">14 @Localizer["Days"]</option>
-                            <option value="28" selected>28 @Localizer["Days"]</option>
+                        <label class="form-label">@Localizer["WeeksToGenerate"]</label>
+                        <select name="weeks" class="form-select">
+                            <option value="1">1 @Localizer["Week"]</option>
+                            <option value="2">2 @Localizer["Weeks"]</option>
+                            <option value="3">3 @Localizer["Weeks"]</option>
+                            <option value="4" selected>4 @Localizer["Weeks"]</option>
                         </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="recalculateCompDays" value="true" id="recalcCompDays">
+                        <label class="form-check-label" for="recalcCompDays">
+                            @Localizer["RecalculateCompDays"]
+                        </label>
+                        <div class="form-text">@Localizer["RecalculateCompDaysHelp"]</div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-magic me-1"></i>@Localizer["Generate"]
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-arrow-repeat me-1"></i>@Localizer["ClearAndRebuild"]
                     </button>
                 </div>
             </form>
@@ -257,122 +457,13 @@
     </div>
 </div>
 
+</div> <!-- end schedule-container -->
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/schedule.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/schedule-print.css" asp-append-version="true" media="print" />
+}
+
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const addNurseModal = new bootstrap.Modal(document.getElementById('addNurseModal'));
-            let currentCell = null;
-
-            // Add nurse button click
-            document.querySelectorAll('.add-nurse-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    currentCell = this.closest('td');
-                    const clinicId = currentCell.dataset.clinic;
-                    const date = currentCell.dataset.date;
-                    const shiftType = currentCell.dataset.shift;
-
-                    document.getElementById('availableNursesList').innerHTML =
-                        '<div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div> @Localizer["Loading"]...</div>';
-
-                    addNurseModal.show();
-
-                    fetch(`/Schedule/GetAvailableNurses?clinicId=${clinicId}&date=${date}&shiftType=${shiftType}`)
-                        .then(r => r.json())
-                        .then(nurses => {
-                            let html = '';
-                            if (nurses.length === 0) {
-                                html = '<p class="text-muted text-center">@Localizer["NoNursesAvailable"]</p>';
-                            } else {
-                                html = '<div class="list-group">';
-                                nurses.forEach(nurse => {
-                                    const available = nurse.isAvailable;
-                                    const borrowed = nurse.isBorrowed;
-                                    html += `
-                                        <div class="list-group-item ${!available ? 'list-group-item-secondary' : ''}">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>${nurse.name}</strong>
-                                                    ${borrowed ? '<span class="badge bg-info ms-1">@Localizer["PoolNurse"]/@Localizer["Borrowed"]</span>' : ''}
-                                                    ${nurse.canHandleResponsibility ? '<i class="bi bi-star-fill text-warning ms-1" title="@Localizer["CanHandleResponsibility"]"></i>' : ''}
-                                                    ${!available ? '<br><small class="text-muted">' + nurse.reasons.join(', ') + '</small>' : ''}
-                                                </div>
-                                                <div>
-                                                    ${available ? `
-                                                        <button type="button" class="btn btn-sm btn-outline-primary assign-nurse"
-                                                                data-nurse-id="${nurse.nurseId}" data-responsible="false">
-                                                            @Localizer["Assign"]
-                                                        </button>
-                                                        ${nurse.canHandleResponsibility ? `
-                                                            <button type="button" class="btn btn-sm btn-warning assign-nurse"
-                                                                    data-nurse-id="${nurse.nurseId}" data-responsible="true">
-                                                                <i class="bi bi-star-fill"></i>
-                                                            </button>
-                                                        ` : ''}
-                                                    ` : ''}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `;
-                                });
-                                html += '</div>';
-                            }
-                            document.getElementById('availableNursesList').innerHTML = html;
-
-                            // Attach handlers
-                            document.querySelectorAll('.assign-nurse').forEach(btn => {
-                                btn.addEventListener('click', function() {
-                                    const nurseId = this.dataset.nurseId;
-                                    const isResponsible = this.dataset.responsible === 'true';
-                                    assignNurse(clinicId, date, shiftType, nurseId, isResponsible);
-                                });
-                            });
-                        });
-                });
-            });
-
-            // Remove assignment
-            document.querySelectorAll('.remove-assignment').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const item = this.closest('.assignment-item');
-                    const assignmentId = item.dataset.assignmentId;
-
-                    fetch('/Schedule/RemoveAssignment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: `assignmentId=${assignmentId}`
-                    }).then(r => {
-                        if (r.ok) location.reload();
-                    });
-                });
-            });
-
-            function assignNurse(clinicId, date, shiftType, nurseId, isResponsible) {
-                fetch('/Schedule/AssignNurse', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `clinicId=${clinicId}&date=${date}&shiftType=${shiftType}&nurseId=${nurseId}&isResponsible=${isResponsible}`
-                }).then(r => {
-                    if (r.ok) location.reload();
-                    else alert('@Localizer["CouldNotAssignNurse"]');
-                });
-            }
-        });
-    </script>
-
-    <style>
-        .schedule-table td {
-            vertical-align: top;
-            padding: 0.5rem;
-        }
-        .shift-cell {
-            min-height: 60px;
-        }
-        .assignment-item .remove-assignment {
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .assignment-item:hover .remove-assignment {
-            opacity: 1;
-        }
-    </style>
+    <script src="~/js/schedule.js" asp-append-version="true"></script>
 }

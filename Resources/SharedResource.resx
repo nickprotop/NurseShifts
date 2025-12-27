@@ -226,6 +226,12 @@
   <data name="DeleteConfirmation" xml:space="preserve"><value>Are you sure you want to delete?</value></data>
   <data name="NoDataFound" xml:space="preserve"><value>No data found.</value></data>
   <data name="InvalidCredentials" xml:space="preserve"><value>Invalid username or password.</value></data>
+  <data name="PasswordMismatch" xml:space="preserve"><value>New password and confirmation do not match.</value></data>
+  <data name="SettingsNotFound" xml:space="preserve"><value>Settings not found.</value></data>
+  <data name="IncorrectPassword" xml:space="preserve"><value>Current password is incorrect.</value></data>
+  <data name="SystemNotConfigured" xml:space="preserve"><value>System not configured.</value></data>
+  <data name="EndDateMustBeAfterStart" xml:space="preserve"><value>End date must be after start date.</value></data>
+  <data name="FailedToRemoveAssignment" xml:space="preserve"><value>Failed to remove assignment.</value></data>
 
   <!-- Login -->
   <data name="Login" xml:space="preserve"><value>Login</value></data>
@@ -272,4 +278,71 @@
   <data name="HeadNurseSettings" xml:space="preserve"><value>Head Nurse Settings</value></data>
   <data name="AutoAssignHeadNurseMorning" xml:space="preserve"><value>Auto-assign head nurse to morning shifts on working days</value></data>
   <data name="AutoAssignHeadNurseMorningHelp" xml:space="preserve"><value>When enabled, the head nurse will automatically be assigned to morning shifts Monday-Friday</value></data>
+
+  <!-- Manual Assignments -->
+  <data name="ManualAssignment" xml:space="preserve"><value>Manual Assignment</value></data>
+  <data name="AutoAssignment" xml:space="preserve"><value>Auto Assignment</value></data>
+  <data name="ClickToLock" xml:space="preserve"><value>Click to lock (make manual)</value></data>
+  <data name="ClickToUnlock" xml:space="preserve"><value>Click to unlock (make auto)</value></data>
+  <data name="MarkAsManual" xml:space="preserve"><value>Mark as Manual Assignment</value></data>
+  <data name="MarkAsManualHelp" xml:space="preserve"><value>Manual assignments are preserved when auto-generating schedule</value></data>
+  <data name="GenerateInfoManual" xml:space="preserve"><value>Manual assignments (marked with lock icon) will be preserved. Only auto-generated assignments will be replaced.</value></data>
+  <data name="ConfirmRemoveManual" xml:space="preserve"><value>This is a manual assignment. Are you sure you want to remove it?</value></data>
+
+  <!-- AJAX Feedback -->
+  <data name="Updating" xml:space="preserve"><value>Updating...</value></data>
+  <data name="UpdateSuccess" xml:space="preserve"><value>Updated successfully</value></data>
+  <data name="UpdateFailed" xml:space="preserve"><value>Update failed</value></data>
+
+  <!-- Schedule Navigation -->
+  <data name="Today" xml:space="preserve"><value>Today</value></data>
+  <data name="PreviousWeek" xml:space="preserve"><value>Previous</value></data>
+  <data name="NextWeek" xml:space="preserve"><value>Next</value></data>
+
+  <!-- Export/Print -->
+  <data name="Export" xml:space="preserve"><value>Export</value></data>
+  <data name="ExportPdf" xml:space="preserve"><value>Export to PDF</value></data>
+  <data name="ExportExcel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="Print" xml:space="preserve"><value>Print</value></data>
+
+  <!-- Workload -->
+  <data name="Workload" xml:space="preserve"><value>Workload</value></data>
+  <data name="TotalHours" xml:space="preserve"><value>Total Hours</value></data>
+  <data name="OvertimeHours" xml:space="preserve"><value>Overtime Hours</value></data>
+  <data name="ShowWorkload" xml:space="preserve"><value>Show Workload</value></data>
+  <data name="HideWorkload" xml:space="preserve"><value>Hide Workload</value></data>
+
+  <!-- Auto-Fill / Regenerate -->
+  <data name="AutoFilled" xml:space="preserve"><value>Schedule auto-updated</value></data>
+  <data name="Added" xml:space="preserve"><value>added</value></data>
+  <data name="Removed" xml:space="preserve"><value>removed</value></data>
+  <data name="RegenerateAll" xml:space="preserve"><value>Regenerate All</value></data>
+  <data name="RegenerateAllWarning" xml:space="preserve"><value>This will delete ALL auto-generated assignments and create new ones from scratch. Use only when you want to completely restart the schedule.</value></data>
+  <data name="AutoFill" xml:space="preserve"><value>Auto-Fill</value></data>
+  <data name="AutoFillHelp" xml:space="preserve"><value>Fill empty shifts with available nurses while respecting manual assignments</value></data>
+  <data name="CannotAutoFillPastDates" xml:space="preserve"><value>Cannot auto-fill past dates</value></data>
+  <data name="ChangeAdded" xml:space="preserve"><value>Added {0} to {1} on {2}</value></data>
+  <data name="ChangeRemoved" xml:space="preserve"><value>Removed {0} from {1} on {2}</value></data>
+  <data name="ChangeMarkedResponsible" xml:space="preserve"><value>Marked {0} as responsible for {1} on {2}</value></data>
+  <data name="ReasonUnavailable" xml:space="preserve"><value>unavailable</value></data>
+  <data name="ReasonReplacedBy" xml:space="preserve"><value>Replaced by {0}</value></data>
+
+  <!-- Week-based Scheduler -->
+  <data name="Week" xml:space="preserve"><value>Week</value></data>
+  <data name="Weeks" xml:space="preserve"><value>Weeks</value></data>
+  <data name="WeeksToGenerate" xml:space="preserve"><value>Weeks to Generate</value></data>
+
+  <!-- Unified Scheduling -->
+  <data name="AutoSchedule" xml:space="preserve"><value>Auto-Schedule</value></data>
+  <data name="AutoScheduleHelp" xml:space="preserve"><value>Automatically fill shifts, grant compensatory days, and optimize the schedule</value></data>
+  <data name="ClearAndRebuild" xml:space="preserve"><value>Clear &amp; Rebuild</value></data>
+  <data name="ClearAndRebuildWarning" xml:space="preserve"><value>This will delete ALL auto-generated assignments and create new ones from scratch.</value></data>
+  <data name="ClearAndRebuildInfoManual" xml:space="preserve"><value>Manual assignments (marked with lock icon) will be preserved.</value></data>
+  <data name="RecalculateCompDays" xml:space="preserve"><value>Recalculate compensatory days</value></data>
+  <data name="RecalculateCompDaysHelp" xml:space="preserve"><value>Revoke existing comp days and recalculate from historical assignments</value></data>
+  <data name="ScheduleUpdated" xml:space="preserve"><value>Schedule updated</value></data>
+  <data name="CompDaysGranted" xml:space="preserve"><value>comp days granted</value></data>
+  <data name="CompDaysRevoked" xml:space="preserve"><value>comp days revoked</value></data>
+  <data name="CannotSchedulePastDates" xml:space="preserve"><value>Cannot schedule past dates. Start date must be today or later.</value></data>
+  <data name="CannotClearPastDates" xml:space="preserve"><value>Cannot clear past dates. Start date must be today or later.</value></data>
 </root>

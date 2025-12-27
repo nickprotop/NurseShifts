@@ -34,276 +34,6 @@ public class ScheduleService : IScheduleService
             .ToListAsync();
     }
 
-    public async Task<List<ShiftAssignment>> GenerateScheduleAsync(int clinicId, DateOnly startDate, int days)
-    {
-        var assignments = new List<ShiftAssignment>();
-        var endDate = startDate.AddDays(days - 1);
-
-        // Delete existing assignments for this period first
-        var existingAssignments = await _context.ShiftAssignments
-            .Where(sa => sa.ClinicId == clinicId && sa.Date >= startDate && sa.Date <= endDate)
-            .ToListAsync();
-        _context.ShiftAssignments.RemoveRange(existingAssignments);
-        await _context.SaveChangesAsync();
-
-        // Get clinic with head nurse info
-        var clinic = await _context.Clinics
-            .Include(c => c.HeadNurse)
-            .FirstOrDefaultAsync(c => c.Id == clinicId);
-
-        if (clinic == null) return assignments;
-
-        // Get shift configurations for this clinic
-        var configs = await _context.ShiftConfigurations
-            .Where(sc => sc.ClinicId == clinicId)
-            .ToListAsync();
-
-        // Get system settings for defaults
-        var settings = await _context.SystemSettings.FirstOrDefaultAsync() ?? new SystemSettings();
-
-        // Track assignments during generation: nurseId -> list of (date, shiftType)
-        var pendingAssignments = new Dictionary<int, List<(DateOnly Date, ShiftType Shift)>>();
-
-        // Track weekly hours during generation: nurseId -> weekStart -> hours
-        var weeklyHoursTracker = new Dictionary<int, Dictionary<DateOnly, int>>();
-
-        // Track pending compensatory days off: nurseId -> number of 8h comp days owed
-        var pendingCompDays = new Dictionary<int, int>();
-
-        // Track which nurses got comp day on which date (to avoid duplicate records)
-        var compDaysGranted = new Dictionary<int, HashSet<DateOnly>>();
-
-        // Load accumulated overtime balances for all nurses (from previous weeks)
-        var allNurses = await _context.Nurses.Where(n => n.IsActive).ToListAsync();
-        foreach (var nurse in allNurses)
-        {
-            var overtimeBalance = await _overtimeService.GetTotalOvertimeBalanceAsync(nurse.Id);
-            // Each 8 hours of overtime = 1 comp day
-            var compDaysOwed = overtimeBalance / 8;
-            if (compDaysOwed > 0)
-            {
-                pendingCompDays[nurse.Id] = compDaysOwed;
-            }
-            compDaysGranted[nurse.Id] = new HashSet<DateOnly>();
-        }
-
-        for (var date = startDate; date <= endDate; date = date.AddDays(1))
-        {
-            foreach (ShiftType shiftType in Enum.GetValues<ShiftType>())
-            {
-                // Get config for this shift (specific day or general)
-                var config = configs.FirstOrDefault(c => c.ShiftType == shiftType && c.DayOfWeek == date.DayOfWeek)
-                    ?? configs.FirstOrDefault(c => c.ShiftType == shiftType && c.DayOfWeek == null);
-
-                if (config == null) continue;
-
-                var requiredNurses = config.RequiredNurses;
-                var shiftDuration = config.ShiftDurationHours;
-                var assigned = 0;
-                var hasResponsibleNurse = false;
-
-                // AUTO-ASSIGN HEAD NURSE TO MORNING SHIFTS ON WORKING DAYS
-                if (shiftType == ShiftType.Morning &&
-                    clinic.AutoAssignHeadNurseMorning &&
-                    IsWorkingDay(date) &&
-                    clinic.HeadNurseId.HasValue &&
-                    clinic.HeadNurse != null &&
-                    clinic.HeadNurse.IsActive)
-                {
-                    var headNurseId = clinic.HeadNurseId.Value;
-                    var headNurse = clinic.HeadNurse;
-                    var maxConsecutive = headNurse.MaxConsecutiveWorkDays ?? settings.DefaultMaxConsecutiveWorkDays;
-
-                    // Check if head nurse is available (not on leave, comp time, etc.)
-                    var headNurseAvailable = await IsHeadNurseAvailableAsync(headNurseId, date);
-
-                    // Also check our pending tracking
-                    var notAlreadyAssigned = !IsNurseAssignedToday(headNurseId, date, pendingAssignments);
-                    var notExceedingHours = !WouldExceedWeeklyHours(headNurse, date, shiftDuration, weeklyHoursTracker, settings);
-                    var notExceedingConsecutive = !await WouldExceedConsecutiveDaysAsync(headNurseId, date, pendingAssignments, maxConsecutive);
-
-                    if (headNurseAvailable && notAlreadyAssigned && notExceedingHours && notExceedingConsecutive)
-                    {
-                        var assignment = new ShiftAssignment
-                        {
-                            Date = date,
-                            ShiftType = shiftType,
-                            ClinicId = clinicId,
-                            NurseId = headNurseId,
-                            IsResponsibleNurse = true, // Head nurse is always responsible
-                            IsBorrowed = false,
-                            Status = AssignmentStatus.Scheduled
-                        };
-
-                        _context.ShiftAssignments.Add(assignment);
-                        assignments.Add(assignment);
-
-                        // Track this assignment
-                        TrackAssignment(headNurseId, date, shiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
-
-                        assigned++;
-                        hasResponsibleNurse = true;
-                    }
-                }
-
-                // Fill remaining slots with other available nurses
-                if (assigned < requiredNurses)
-                {
-                    // Get available nurses from the service
-                    var availableNurses = await _availabilityService.GetAvailableNursesAsync(clinicId, date, shiftType, true);
-
-                    // Filter and rank nurses (sync filters only)
-                    var rankedNurses = availableNurses
-                        .Where(n => n.IsAvailable)
-                        .Where(n => !IsNurseAssignedToday(n.Nurse.Id, date, pendingAssignments))
-                        // If AutoAssignHeadNurseMorning is enabled, head nurse only works Mon-Fri mornings
-                        .Where(n => !(clinic.AutoAssignHeadNurseMorning &&
-                                      n.Nurse.Id == clinic.HeadNurseId &&
-                                      (!IsWorkingDay(date) || shiftType != ShiftType.Morning)))
-                        .Where(n => !WouldExceedWeeklyHours(n.Nurse, date, shiftDuration, weeklyHoursTracker, settings))
-                        .Where(n => !WouldViolateRestPeriod(n.Nurse.Id, date, shiftType, pendingAssignments, n.Nurse.MinRestHoursBetweenShifts ?? settings.DefaultMinRestHoursBetweenShifts))
-                        .OrderByDescending(n => n.Score)
-                        .ToList();
-
-                    // Separate nurses: those needing comp days vs those who don't
-                    var nursesNeedingCompDay = new List<NurseAvailability>();
-                    var nursesAvailableToWork = new List<NurseAvailability>();
-
-                    foreach (var nurseAvail in rankedNurses)
-                    {
-                        var nurse = nurseAvail.Nurse;
-
-                        // Check consecutive days (async - needs database query)
-                        var maxConsecutive = nurse.MaxConsecutiveWorkDays ?? settings.DefaultMaxConsecutiveWorkDays;
-                        if (await WouldExceedConsecutiveDaysAsync(nurse.Id, date, pendingAssignments, maxConsecutive))
-                            continue;
-
-                        // Check if nurse has pending comp days and hasn't received one today yet
-                        var hasCompDaysPending = pendingCompDays.TryGetValue(nurse.Id, out var compDaysOwed) && compDaysOwed > 0;
-                        var alreadyGotCompDayToday = compDaysGranted.TryGetValue(nurse.Id, out var grantedDates) && grantedDates.Contains(date);
-
-                        if (hasCompDaysPending && !alreadyGotCompDayToday)
-                        {
-                            nursesNeedingCompDay.Add(nurseAvail);
-                        }
-                        else
-                        {
-                            nursesAvailableToWork.Add(nurseAvail);
-                        }
-                    }
-
-                    var slotsNeeded = requiredNurses - assigned;
-
-                    // First, try to fill with nurses who don't need comp days
-                    foreach (var nurseAvail in nursesAvailableToWork)
-                    {
-                        if (assigned >= requiredNurses) break;
-
-                        var nurse = nurseAvail.Nurse;
-                        var isResponsible = !hasResponsibleNurse &&
-                            (nurse.CanHandleResponsibility || nurse.Id == clinic.HeadNurseId);
-
-                        var assignment = new ShiftAssignment
-                        {
-                            Date = date,
-                            ShiftType = shiftType,
-                            ClinicId = clinicId,
-                            NurseId = nurse.Id,
-                            IsResponsibleNurse = isResponsible,
-                            IsBorrowed = nurseAvail.IsBorrowed,
-                            Status = AssignmentStatus.Scheduled
-                        };
-
-                        _context.ShiftAssignments.Add(assignment);
-                        assignments.Add(assignment);
-                        TrackAssignment(nurse.Id, date, shiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
-
-                        assigned++;
-                        if (isResponsible) hasResponsibleNurse = true;
-                    }
-
-                    // Grant comp days to nurses who need them (if shift is filled)
-                    if (assigned >= requiredNurses)
-                    {
-                        foreach (var nurseAvail in nursesNeedingCompDay)
-                        {
-                            var nurse = nurseAvail.Nurse;
-                            if (!compDaysGranted[nurse.Id].Contains(date))
-                            {
-                                // Create compensatory time off record
-                                var compTimeOff = new CompensatoryTimeOff
-                                {
-                                    NurseId = nurse.Id,
-                                    Date = date,
-                                    HoursCompensated = 8,
-                                    Notes = "Auto-generated compensatory day off",
-                                    CreatedAt = DateTime.UtcNow
-                                };
-                                _context.CompensatoryTimeOffs.Add(compTimeOff);
-                                compDaysGranted[nurse.Id].Add(date);
-
-                                // Reduce pending comp days
-                                pendingCompDays[nurse.Id]--;
-                                if (pendingCompDays[nurse.Id] <= 0)
-                                    pendingCompDays.Remove(nurse.Id);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Shift still needs nurses - use those who need comp days
-                        foreach (var nurseAvail in nursesNeedingCompDay)
-                        {
-                            if (assigned >= requiredNurses) break;
-
-                            var nurse = nurseAvail.Nurse;
-                            var isResponsible = !hasResponsibleNurse &&
-                                (nurse.CanHandleResponsibility || nurse.Id == clinic.HeadNurseId);
-
-                            var assignment = new ShiftAssignment
-                            {
-                                Date = date,
-                                ShiftType = shiftType,
-                                ClinicId = clinicId,
-                                NurseId = nurse.Id,
-                                IsResponsibleNurse = isResponsible,
-                                IsBorrowed = nurseAvail.IsBorrowed,
-                                Status = AssignmentStatus.Scheduled
-                            };
-
-                            _context.ShiftAssignments.Add(assignment);
-                            assignments.Add(assignment);
-                            TrackAssignment(nurse.Id, date, shiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
-
-                            assigned++;
-                            if (isResponsible) hasResponsibleNurse = true;
-                            // Nurse works - comp day postponed to another day
-                        }
-                    }
-                }
-
-                // If we still need a responsible nurse and have assigned someone
-                if (config.RequiresResponsibleNurse && !hasResponsibleNurse && assigned > 0)
-                {
-                    var firstAssignment = assignments
-                        .Where(a => a.Date == date && a.ShiftType == shiftType)
-                        .FirstOrDefault();
-                    if (firstAssignment != null)
-                    {
-                        var nurseForResp = await _context.Nurses.FindAsync(firstAssignment.NurseId);
-                        if (nurseForResp?.CanHandleResponsibility == true || nurseForResp?.Id == clinic.HeadNurseId)
-                        {
-                            firstAssignment.IsResponsibleNurse = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        await _context.SaveChangesAsync();
-        return assignments;
-    }
-
     private void TrackAssignment(int nurseId, DateOnly date, ShiftType shiftType, int shiftDuration,
         Dictionary<int, List<(DateOnly Date, ShiftType Shift)>> pendingAssignments,
         Dictionary<int, Dictionary<DateOnly, int>> weeklyHoursTracker)
@@ -452,5 +182,585 @@ public class ScheduleService : IScheduleService
         _context.ShiftAssignments.Remove(assignment);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    /// <summary>
+    /// Calculate a score for an already-assigned nurse to determine rebalancing priority.
+    /// Lower score = more likely to be replaced by a higher-scored available nurse.
+    /// Uses similar scoring logic as NurseAvailabilityService but synchronous.
+    /// </summary>
+    private int GetNurseScoreForRebalance(Nurse nurse, DateOnly date, ShiftType shiftType, SystemSettings settings)
+    {
+        var score = 0;
+
+        var shiftFlag = shiftType switch
+        {
+            ShiftType.Morning => ShiftTypeFlags.Morning,
+            ShiftType.Afternoon => ShiftTypeFlags.Afternoon,
+            ShiftType.Night => ShiftTypeFlags.Night,
+            _ => ShiftTypeFlags.None
+        };
+
+        // Preferred shift bonus
+        if ((nurse.PreferredShifts & shiftFlag) != ShiftTypeFlags.None)
+            score += 10;
+
+        // Avoided shift penalty
+        if ((nurse.AvoidedShifts & shiftFlag) != ShiftTypeFlags.None)
+            score -= 10;
+
+        // Primary clinic nurses have higher priority
+        // (Borrowed nurses have lower priority, but we don't have that info here)
+
+        return score;
+    }
+
+    private async Task<bool> IsNurseAvailableForShiftAsync(int nurseId, DateOnly date, ShiftType shiftType)
+    {
+        // Check if on approved leave
+        var onLeave = await _context.NurseLeaves
+            .AnyAsync(nl => nl.NurseId == nurseId &&
+                           nl.Status == LeaveStatus.Approved &&
+                           nl.StartDate <= date && nl.EndDate >= date);
+        if (onLeave) return false;
+
+        // Check if on compensatory time off
+        var onCompTime = await _context.CompensatoryTimeOffs
+            .AnyAsync(cto => cto.NurseId == nurseId && cto.Date == date);
+        if (onCompTime) return false;
+
+        // Check unavailable wish for this shift
+        var unavailable = await _context.NurseShiftWishes
+            .AnyAsync(w => w.NurseId == nurseId && w.Date == date &&
+                          w.WishType == WishType.Unavailable &&
+                          (w.ShiftType == null || w.ShiftType == shiftType));
+        if (unavailable) return false;
+
+        // Check if nurse is still active
+        var nurse = await _context.Nurses.FindAsync(nurseId);
+        if (nurse == null || !nurse.IsActive) return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Unified scheduling algorithm - the single source of truth for schedule management.
+    /// </summary>
+    public async Task<ScheduleResult> ScheduleAsync(int clinicId, DateOnly startDate, DateOnly endDate)
+    {
+        var result = new ScheduleResult();
+
+        var clinic = await _context.Clinics
+            .Include(c => c.HeadNurse)
+            .FirstOrDefaultAsync(c => c.Id == clinicId);
+
+        if (clinic == null) return result;
+
+        var configs = await _context.ShiftConfigurations
+            .Where(sc => sc.ClinicId == clinicId)
+            .ToListAsync();
+
+        var settings = await _context.SystemSettings.FirstOrDefaultAsync() ?? new SystemSettings();
+
+        // Track assignments during scheduling
+        var pendingAssignments = new Dictionary<int, List<(DateOnly Date, ShiftType Shift)>>();
+        var weeklyHoursTracker = new Dictionary<int, Dictionary<DateOnly, int>>();
+
+        // Pre-populate trackers with existing assignments
+        var allExistingAssignments = await _context.ShiftAssignments
+            .Include(sa => sa.Nurse)
+            .Where(sa => sa.ClinicId == clinicId && sa.Date >= startDate && sa.Date <= endDate)
+            .ToListAsync();
+
+        foreach (var existing in allExistingAssignments)
+        {
+            var shiftDuration = configs
+                .FirstOrDefault(c => c.ShiftType == existing.ShiftType && (c.DayOfWeek == existing.Date.DayOfWeek || c.DayOfWeek == null))
+                ?.ShiftDurationHours ?? 8;
+            TrackAssignment(existing.NurseId, existing.Date, existing.ShiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
+        }
+
+        // === STEP 1: Calculate & Grant Comp Days ===
+        await GrantPendingCompDaysAsync(clinicId, startDate, endDate, configs, settings, pendingAssignments, weeklyHoursTracker, result);
+
+        // === STEP 2-5: Remove unavailable, fill gaps, rebalance, ensure responsible ===
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            foreach (ShiftType shiftType in Enum.GetValues<ShiftType>())
+            {
+                var config = configs.FirstOrDefault(c => c.ShiftType == shiftType && c.DayOfWeek == date.DayOfWeek)
+                    ?? configs.FirstOrDefault(c => c.ShiftType == shiftType && c.DayOfWeek == null);
+
+                if (config == null) continue;
+
+                var shiftDuration = config.ShiftDurationHours;
+                var requiredNurses = config.RequiredNurses;
+
+                // Get current assignments
+                var currentAssignments = await _context.ShiftAssignments
+                    .Include(sa => sa.Nurse)
+                    .Where(sa => sa.ClinicId == clinicId && sa.Date == date && sa.ShiftType == shiftType)
+                    .ToListAsync();
+
+                // STEP 2: Remove unavailable (auto-assignments only)
+                foreach (var assignment in currentAssignments.ToList())
+                {
+                    if (assignment.IsManualAssignment) continue;
+
+                    var isAvailable = await IsNurseAvailableForShiftAsync(assignment.NurseId, date, shiftType);
+                    if (!isAvailable)
+                    {
+                        var nurseName = assignment.Nurse?.FullName ?? "Unknown";
+                        _context.ShiftAssignments.Remove(assignment);
+                        currentAssignments.Remove(assignment);
+
+                        if (pendingAssignments.ContainsKey(assignment.NurseId))
+                            pendingAssignments[assignment.NurseId].RemoveAll(p => p.Date == date && p.Shift == shiftType);
+
+                        result.AssignmentsRemoved++;
+                        result.Changes.Add(new ScheduleChange
+                        {
+                            Type = ScheduleChangeType.Removed,
+                            NurseName = nurseName,
+                            ShiftType = shiftType,
+                            Date = date,
+                            Reason = "Unavailable"
+                        });
+                    }
+                }
+
+                // STEP 3: Fill empty slots
+                var currentCount = currentAssignments.Count;
+                if (currentCount < requiredNurses)
+                {
+                    var hasResponsibleNurse = currentAssignments.Any(a => a.IsResponsibleNurse);
+                    var needsResponsibleNurse = config.RequiresResponsibleNurse && !hasResponsibleNurse;
+
+                    // Try to assign head nurse to morning shifts on working days
+                    if (shiftType == ShiftType.Morning &&
+                        clinic.AutoAssignHeadNurseMorning &&
+                        IsWorkingDay(date) &&
+                        clinic.HeadNurseId.HasValue &&
+                        clinic.HeadNurse != null &&
+                        clinic.HeadNurse.IsActive &&
+                        !currentAssignments.Any(a => a.NurseId == clinic.HeadNurseId))
+                    {
+                        var headNurseId = clinic.HeadNurseId.Value;
+                        var headNurse = clinic.HeadNurse;
+                        var maxConsecutive = headNurse.MaxConsecutiveWorkDays ?? settings.DefaultMaxConsecutiveWorkDays;
+
+                        var headNurseAvailable = await IsHeadNurseAvailableAsync(headNurseId, date);
+                        var notAlreadyAssigned = !IsNurseAssignedToday(headNurseId, date, pendingAssignments);
+                        var notExceedingHours = !WouldExceedWeeklyHours(headNurse, date, shiftDuration, weeklyHoursTracker, settings);
+                        var notExceedingConsecutive = !await WouldExceedConsecutiveDaysAsync(headNurseId, date, pendingAssignments, maxConsecutive);
+
+                        if (headNurseAvailable && notAlreadyAssigned && notExceedingHours && notExceedingConsecutive)
+                        {
+                            var assignment = new ShiftAssignment
+                            {
+                                Date = date,
+                                ShiftType = shiftType,
+                                ClinicId = clinicId,
+                                NurseId = headNurseId,
+                                IsResponsibleNurse = true,
+                                IsBorrowed = false,
+                                Status = AssignmentStatus.Scheduled
+                            };
+
+                            _context.ShiftAssignments.Add(assignment);
+                            TrackAssignment(headNurseId, date, shiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
+
+                            currentCount++;
+                            hasResponsibleNurse = true;
+                            result.AssignmentsAdded++;
+                            result.Changes.Add(new ScheduleChange
+                            {
+                                Type = ScheduleChangeType.Added,
+                                NurseName = headNurse.FullName,
+                                ShiftType = shiftType,
+                                Date = date
+                            });
+                        }
+                    }
+
+                    // Fill remaining slots with available nurses
+                    if (currentCount < requiredNurses)
+                    {
+                        var existingNurseIds = currentAssignments.Select(a => a.NurseId).ToHashSet();
+                        var availableNurses = await _availabilityService.GetAvailableNursesAsync(clinicId, date, shiftType, true);
+
+                        var rankedNurses = availableNurses
+                            .Where(n => n.IsAvailable)
+                            .Where(n => !existingNurseIds.Contains(n.Nurse.Id))
+                            .Where(n => !IsNurseAssignedToday(n.Nurse.Id, date, pendingAssignments))
+                            .Where(n => !(clinic.AutoAssignHeadNurseMorning &&
+                                          n.Nurse.Id == clinic.HeadNurseId &&
+                                          (!IsWorkingDay(date) || shiftType != ShiftType.Morning)))
+                            .Where(n => !WouldExceedWeeklyHours(n.Nurse, date, shiftDuration, weeklyHoursTracker, settings))
+                            .Where(n => !WouldViolateRestPeriod(n.Nurse.Id, date, shiftType, pendingAssignments, n.Nurse.MinRestHoursBetweenShifts ?? settings.DefaultMinRestHoursBetweenShifts))
+                            .OrderByDescending(n => needsResponsibleNurse && n.Nurse.CanHandleResponsibility ? 1 : 0)
+                            .ThenByDescending(n => n.Score)
+                            .ToList();
+
+                        foreach (var nurseAvail in rankedNurses)
+                        {
+                            if (currentCount >= requiredNurses) break;
+
+                            var nurse = nurseAvail.Nurse;
+                            var maxConsecutive = nurse.MaxConsecutiveWorkDays ?? settings.DefaultMaxConsecutiveWorkDays;
+                            if (await WouldExceedConsecutiveDaysAsync(nurse.Id, date, pendingAssignments, maxConsecutive))
+                                continue;
+
+                            var isResponsible = !hasResponsibleNurse &&
+                                (nurse.CanHandleResponsibility || nurse.Id == clinic.HeadNurseId);
+
+                            var assignment = new ShiftAssignment
+                            {
+                                Date = date,
+                                ShiftType = shiftType,
+                                ClinicId = clinicId,
+                                NurseId = nurse.Id,
+                                IsResponsibleNurse = isResponsible,
+                                IsBorrowed = nurseAvail.IsBorrowed,
+                                Status = AssignmentStatus.Scheduled
+                            };
+
+                            _context.ShiftAssignments.Add(assignment);
+                            TrackAssignment(nurse.Id, date, shiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
+
+                            currentCount++;
+                            if (isResponsible) hasResponsibleNurse = true;
+                            result.AssignmentsAdded++;
+                            result.Changes.Add(new ScheduleChange
+                            {
+                                Type = ScheduleChangeType.Added,
+                                NurseName = nurse.FullName,
+                                ShiftType = shiftType,
+                                Date = date
+                            });
+                        }
+                    }
+                }
+
+                // STEP 5: Ensure responsible nurse
+                if (config.RequiresResponsibleNurse && !currentAssignments.Any(a => a.IsResponsibleNurse) && currentCount > 0)
+                {
+                    var shiftAssignments = await _context.ShiftAssignments
+                        .Include(a => a.Nurse)
+                        .Where(a => a.ClinicId == clinicId && a.Date == date && a.ShiftType == shiftType && !a.IsResponsibleNurse)
+                        .ToListAsync();
+
+                    foreach (var assignment in shiftAssignments)
+                    {
+                        if (assignment.Nurse?.CanHandleResponsibility == true)
+                        {
+                            assignment.IsResponsibleNurse = true;
+                            result.Changes.Add(new ScheduleChange
+                            {
+                                Type = ScheduleChangeType.MarkedResponsible,
+                                NurseName = assignment.Nurse.FullName,
+                                ShiftType = shiftType,
+                                Date = date
+                            });
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // STEP 4: Rebalance
+        await RebalanceScheduleAsync(clinicId, startDate, endDate, clinic, configs, settings, pendingAssignments, weeklyHoursTracker, result);
+
+        await _context.SaveChangesAsync();
+        return result;
+    }
+
+    /// <summary>
+    /// Grant pending comp days to nurses with overtime balance
+    /// </summary>
+    private async Task GrantPendingCompDaysAsync(
+        int clinicId, DateOnly startDate, DateOnly endDate,
+        List<ShiftConfiguration> configs, SystemSettings settings,
+        Dictionary<int, List<(DateOnly Date, ShiftType Shift)>> pendingAssignments,
+        Dictionary<int, Dictionary<DateOnly, int>> weeklyHoursTracker,
+        ScheduleResult result)
+    {
+        // Get nurses who work at this clinic (primary or borrowed)
+        var primaryNurseIds = await _context.Nurses
+            .Where(n => n.IsActive && n.PrimaryClinicId == clinicId)
+            .Select(n => n.Id)
+            .ToListAsync();
+
+        var borrowedNurseIds = await _context.NurseClinicAssignments
+            .Where(nca => nca.ClinicId == clinicId && nca.CanBeBorrowed)
+            .Select(nca => nca.NurseId)
+            .ToListAsync();
+
+        var allNurseIds = primaryNurseIds.Union(borrowedNurseIds).ToList();
+        var allNurses = await _context.Nurses
+            .Where(n => n.IsActive && allNurseIds.Contains(n.Id))
+            .ToListAsync();
+
+        foreach (var nurse in allNurses)
+        {
+            var overtimeBalance = await _overtimeService.GetTotalOvertimeBalanceAsync(nurse.Id);
+            var compDaysOwed = overtimeBalance / 8;
+
+            if (compDaysOwed <= 0) continue;
+
+            // Check if nurse already has a comp day this week (idempotency)
+            var weekStart = GetWeekStart(startDate);
+            if (await _overtimeService.HasCompDayInWeekAsync(nurse.Id, weekStart))
+                continue;
+
+            // Find best day to grant comp day (day with lowest staffing needs, not already assigned)
+            DateOnly? bestDay = null;
+            var bestScore = int.MaxValue;
+
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                // Skip if nurse already working this day
+                if (IsNurseAssignedToday(nurse.Id, date, pendingAssignments))
+                    continue;
+
+                // Skip if already has comp day or leave this day
+                var hasAbsence = await _context.CompensatoryTimeOffs.AnyAsync(c => c.NurseId == nurse.Id && c.Date == date)
+                    || await _context.NurseLeaves.AnyAsync(l => l.NurseId == nurse.Id && l.StartDate <= date && l.EndDate >= date && l.Status == LeaveStatus.Approved);
+                if (hasAbsence) continue;
+
+                // Calculate staffing coverage for this day
+                var totalAssigned = await _context.ShiftAssignments
+                    .CountAsync(a => a.ClinicId == clinicId && a.Date == date);
+
+                if (totalAssigned < bestScore)
+                {
+                    bestScore = totalAssigned;
+                    bestDay = date;
+                }
+            }
+
+            if (bestDay.HasValue)
+            {
+                // Grant comp day
+                var compTimeOff = new CompensatoryTimeOff
+                {
+                    NurseId = nurse.Id,
+                    Date = bestDay.Value,
+                    HoursCompensated = 8,
+                    Notes = "Auto-scheduled compensatory day off",
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.CompensatoryTimeOffs.Add(compTimeOff);
+
+                // Consume overtime balance
+                await _overtimeService.ConsumeOvertimeAsync(nurse.Id, 8);
+
+                result.CompDaysGranted++;
+                result.Changes.Add(new ScheduleChange
+                {
+                    Type = ScheduleChangeType.CompDayGranted,
+                    NurseName = nurse.FullName,
+                    Date = bestDay.Value
+                });
+            }
+        }
+    }
+
+    /// <summary>
+    /// Rebalance schedule by swapping weaker assignments with better candidates
+    /// </summary>
+    private async Task RebalanceScheduleAsync(
+        int clinicId, DateOnly startDate, DateOnly endDate,
+        Clinic clinic, List<ShiftConfiguration> configs, SystemSettings settings,
+        Dictionary<int, List<(DateOnly Date, ShiftType Shift)>> pendingAssignments,
+        Dictionary<int, Dictionary<DateOnly, int>> weeklyHoursTracker,
+        ScheduleResult result)
+    {
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            foreach (ShiftType shiftType in Enum.GetValues<ShiftType>())
+            {
+                var config = configs.FirstOrDefault(c => c.ShiftType == shiftType && c.DayOfWeek == date.DayOfWeek)
+                    ?? configs.FirstOrDefault(c => c.ShiftType == shiftType && c.DayOfWeek == null);
+
+                if (config == null) continue;
+
+                var shiftDuration = config.ShiftDurationHours;
+
+                var currentAutoAssignments = await _context.ShiftAssignments
+                    .Include(a => a.Nurse)
+                    .Where(a => a.ClinicId == clinicId && a.Date == date &&
+                                a.ShiftType == shiftType && !a.IsManualAssignment)
+                    .ToListAsync();
+
+                if (!currentAutoAssignments.Any()) continue;
+
+                var assignedNurseIds = currentAutoAssignments.Select(a => a.NurseId).ToHashSet();
+
+                var availableNurses = await _availabilityService.GetAvailableNursesAsync(clinicId, date, shiftType, true);
+                var unassignedAvailable = availableNurses
+                    .Where(n => n.IsAvailable && !assignedNurseIds.Contains(n.Nurse.Id))
+                    .Where(n => !IsNurseAssignedToday(n.Nurse.Id, date, pendingAssignments))
+                    .Where(n => !(clinic.AutoAssignHeadNurseMorning &&
+                                  n.Nurse.Id == clinic.HeadNurseId &&
+                                  (!IsWorkingDay(date) || shiftType != ShiftType.Morning)))
+                    .Where(n => !WouldExceedWeeklyHours(n.Nurse, date, shiftDuration, weeklyHoursTracker, settings))
+                    .Where(n => !WouldViolateRestPeriod(n.Nurse.Id, date, shiftType, pendingAssignments, n.Nurse.MinRestHoursBetweenShifts ?? settings.DefaultMinRestHoursBetweenShifts))
+                    .OrderByDescending(n => n.Score)
+                    .ToList();
+
+                foreach (var available in unassignedAvailable)
+                {
+                    var nurse = available.Nurse;
+                    var maxConsecutive = nurse.MaxConsecutiveWorkDays ?? settings.DefaultMaxConsecutiveWorkDays;
+                    if (await WouldExceedConsecutiveDaysAsync(nurse.Id, date, pendingAssignments, maxConsecutive))
+                        continue;
+
+                    var weakest = currentAutoAssignments
+                        .Where(a => a.Nurse != null)
+                        .Where(a => !(clinic.AutoAssignHeadNurseMorning &&
+                                      a.NurseId == clinic.HeadNurseId &&
+                                      shiftType == ShiftType.Morning &&
+                                      IsWorkingDay(date)))
+                        .OrderBy(a => GetNurseScoreForRebalance(a.Nurse!, date, shiftType, settings))
+                        .FirstOrDefault();
+
+                    if (weakest?.Nurse == null) break;
+
+                    var weakestScore = GetNurseScoreForRebalance(weakest.Nurse, date, shiftType, settings);
+
+                    if (available.Score > weakestScore)
+                    {
+                        var wasResponsible = weakest.IsResponsibleNurse;
+
+                        _context.ShiftAssignments.Remove(weakest);
+                        currentAutoAssignments.Remove(weakest);
+                        assignedNurseIds.Remove(weakest.NurseId);
+
+                        if (pendingAssignments.ContainsKey(weakest.NurseId))
+                            pendingAssignments[weakest.NurseId].RemoveAll(p => p.Date == date && p.Shift == shiftType);
+
+                        var weekStart = GetWeekStart(date);
+                        if (weeklyHoursTracker.ContainsKey(weakest.NurseId) &&
+                            weeklyHoursTracker[weakest.NurseId].ContainsKey(weekStart))
+                        {
+                            weeklyHoursTracker[weakest.NurseId][weekStart] -= shiftDuration;
+                        }
+
+                        var isResponsible = wasResponsible && nurse.CanHandleResponsibility;
+                        var newAssignment = new ShiftAssignment
+                        {
+                            Date = date,
+                            ShiftType = shiftType,
+                            ClinicId = clinicId,
+                            NurseId = nurse.Id,
+                            IsResponsibleNurse = isResponsible,
+                            IsBorrowed = available.IsBorrowed,
+                            Status = AssignmentStatus.Scheduled
+                        };
+
+                        _context.ShiftAssignments.Add(newAssignment);
+                        currentAutoAssignments.Add(newAssignment);
+                        assignedNurseIds.Add(nurse.Id);
+
+                        TrackAssignment(nurse.Id, date, shiftType, shiftDuration, pendingAssignments, weeklyHoursTracker);
+
+                        result.AssignmentsRemoved++;
+                        result.AssignmentsAdded++;
+                        result.Changes.Add(new ScheduleChange
+                        {
+                            Type = ScheduleChangeType.Removed,
+                            NurseName = weakest.Nurse.FullName,
+                            ShiftType = shiftType,
+                            Date = date,
+                            Reason = $"Replaced by {nurse.FullName}"
+                        });
+                        result.Changes.Add(new ScheduleChange
+                        {
+                            Type = ScheduleChangeType.Added,
+                            NurseName = nurse.FullName,
+                            ShiftType = shiftType,
+                            Date = date
+                        });
+
+                        if (wasResponsible && !isResponsible)
+                        {
+                            var capableNurse = currentAutoAssignments
+                                .FirstOrDefault(a => a.Nurse?.CanHandleResponsibility == true && !a.IsResponsibleNurse);
+                            if (capableNurse != null)
+                            {
+                                capableNurse.IsResponsibleNurse = true;
+                                result.Changes.Add(new ScheduleChange
+                                {
+                                    Type = ScheduleChangeType.MarkedResponsible,
+                                    NurseName = capableNurse.Nurse!.FullName,
+                                    ShiftType = shiftType,
+                                    Date = date
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clears all auto-assignments and rebuilds schedule from scratch.
+    /// </summary>
+    public async Task<ScheduleResult> ClearAndRebuildAsync(int clinicId, DateOnly startDate, DateOnly endDate, bool recalculateCompDays = false)
+    {
+        var result = new ScheduleResult();
+
+        // Delete existing AUTO assignments (keep manual)
+        var existingAutoAssignments = await _context.ShiftAssignments
+            .Where(sa => sa.ClinicId == clinicId && sa.Date >= startDate && sa.Date <= endDate && !sa.IsManualAssignment)
+            .ToListAsync();
+
+        result.AssignmentsRemoved = existingAutoAssignments.Count;
+        _context.ShiftAssignments.RemoveRange(existingAutoAssignments);
+
+        // Optionally recalculate comp days
+        if (recalculateCompDays)
+        {
+            // Revoke existing comp days in range
+            var existingCompDays = await _context.CompensatoryTimeOffs
+                .Where(c => c.Date >= startDate && c.Date <= endDate)
+                .ToListAsync();
+
+            foreach (var compDay in existingCompDays)
+            {
+                await _overtimeService.RevokeCompDayAsync(compDay.Id);
+                result.CompDaysRevoked++;
+                var nurse = await _context.Nurses.FindAsync(compDay.NurseId);
+                result.Changes.Add(new ScheduleChange
+                {
+                    Type = ScheduleChangeType.CompDayRevoked,
+                    NurseName = nurse?.FullName ?? "Unknown",
+                    Date = compDay.Date
+                });
+            }
+
+            // Recalculate overtime from historical assignments (last 12 weeks)
+            var historyStart = startDate.AddDays(-84); // 12 weeks back
+            var nurses = await _context.Nurses.Where(n => n.IsActive).ToListAsync();
+            foreach (var nurse in nurses)
+            {
+                await _overtimeService.RecalculateFromAssignmentsAsync(nurse.Id, historyStart, startDate.AddDays(-1));
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Now run the unified scheduling algorithm
+        var scheduleResult = await ScheduleAsync(clinicId, startDate, endDate);
+
+        // Merge results
+        result.AssignmentsAdded = scheduleResult.AssignmentsAdded;
+        result.CompDaysGranted = scheduleResult.CompDaysGranted;
+        result.Changes.AddRange(scheduleResult.Changes);
+
+        return result;
     }
 }
