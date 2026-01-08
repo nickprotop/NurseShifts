@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutSettings" xml:space="preserve">
+    <value>About Settings</value>
+  </data>
+  <data name="AboutToDeleteClinic" xml:space="preserve">
+    <value>You are about to delete the clinic</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>This action cannot be undone.</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ActiveOnly" xml:space="preserve">
+    <value>Active only</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddClinic" xml:space="preserve">
+    <value>Add Clinic</value>
+  </data>
+  <data name="AddFirstNurse" xml:space="preserve">
+    <value>Add your first nurse to get started</value>
+  </data>
+  <data name="AddLeaveRecord" xml:space="preserve">
+    <value>Add a new leave record for a nurse</value>
+  </data>
+  <data name="AddNurse" xml:space="preserve">
+    <value>Add Nurse</value>
+  </data>
+  <data name="AddNurseToShift" xml:space="preserve">
+    <value>Add Nurse to Shift</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>added</value>
+  </data>
+  <data name="Afternoon" xml:space="preserve">
+    <value>Afternoon</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AllClinics" xml:space="preserve">
+    <value>All Clinics</value>
+  </data>
+  <data name="AllNurses" xml:space="preserve">
+    <value>All Nurses</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="Assign" xml:space="preserve">
+    <value>Assign</value>
+  </data>
+  <data name="AutoAssignHeadNurseMorning" xml:space="preserve">
+    <value>Auto-assign head nurse to morning shifts on working days</value>
+  </data>
+  <data name="AutoAssignHeadNurseMorningHelp" xml:space="preserve">
+    <value>When enabled, the head nurse will automatically be assigned to morning shifts Monday-Friday</value>
+  </data>
+  <data name="AutoAssignment" xml:space="preserve">
+    <value>Auto Assignment</value>
+  </data>
+  <data name="AutoFill" xml:space="preserve">
+    <value>Auto-Fill</value>
+  </data>
+  <data name="AutoFillHelp" xml:space="preserve">
+    <value>Fill empty shifts with available nurses while respecting manual assignments</value>
+  </data>
+  <data name="AutoFilled" xml:space="preserve">
+    <value>Schedule auto-updated</value>
+  </data>
+  <data name="AutoGenerate" xml:space="preserve">
+    <value>Auto Generate</value>
+  </data>
+  <data name="AutoSchedule" xml:space="preserve">
+    <value>Auto-Schedule</value>
+  </data>
+  <data name="AutoScheduleHelp" xml:space="preserve">
+    <value>Automatically fill shifts, grant compensatory days, and optimize the schedule</value>
+  </data>
+  <data name="AvoidedShifts" xml:space="preserve">
+    <value>Avoided Shifts</value>
+  </data>
+  <data name="AvoidedShiftsHelp" xml:space="preserve">
+    <value>Will not be scheduled</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="BackToClinics" xml:space="preserve">
+    <value>Back to Clinics</value>
+  </data>
+  <data name="BackToDashboard" xml:space="preserve">
+    <value>Back to Dashboard</value>
+  </data>
+  <data name="BorrowableClinics" xml:space="preserve">
+    <value>Borrowable To Clinics</value>
+  </data>
+  <data name="Borrowed" xml:space="preserve">
+    <value>Borrowed</value>
+  </data>
+  <data name="BorrowedFromOtherClinic" xml:space="preserve">
+    <value>Borrowed from other clinic</value>
+  </data>
+  <data name="CanHandleResponsibility" xml:space="preserve">
+    <value>Can Handle Responsibility</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CannotAutoFillPastDates" xml:space="preserve">
+    <value>Cannot auto-fill past dates</value>
+  </data>
+  <data name="CannotClearPastDates" xml:space="preserve">
+    <value>Cannot clear past dates. Start date must be today or later.</value>
+  </data>
+  <data name="CannotGeneratePastDates" xml:space="preserve">
+    <value>Cannot generate schedule for past dates. Start date must be today or later.</value>
+  </data>
+  <data name="CannotSchedulePastDates" xml:space="preserve">
+    <value>Cannot schedule past dates. Start date must be today or later.</value>
+  </data>
+  <data name="ChangeAdded" xml:space="preserve">
+    <value>Added {0} to {1} on {2}</value>
+  </data>
+  <data name="ChangeMarkedResponsible" xml:space="preserve">
+    <value>Marked {0} as responsible for {1} on {2}</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="ChangePasswordSubtitle" xml:space="preserve">
+    <value>Update your admin password</value>
+  </data>
+  <data name="ChangeRemoved" xml:space="preserve">
+    <value>Removed {0} from {1} on {2}</value>
+  </data>
+  <data name="ClearAndRebuild" xml:space="preserve">
+    <value>Clear &amp; Rebuild</value>
+  </data>
+  <data name="ClearAndRebuildInfoManual" xml:space="preserve">
+    <value>Manual assignments (marked with lock icon) will be preserved.</value>
+  </data>
+  <data name="ClearAndRebuildWarning" xml:space="preserve">
+    <value>This will delete ALL auto-generated assignments and create new ones from scratch.</value>
+  </data>
+  <data name="ClickToLock" xml:space="preserve">
+    <value>Click to lock (make manual)</value>
+  </data>
+  <data name="ClickToUnlock" xml:space="preserve">
+    <value>Click to unlock (make auto)</value>
+  </data>
+  <data name="Clinic" xml:space="preserve">
+    <value>Clinic</value>
+  </data>
+  <data name="ClinicHasNurses" xml:space="preserve">
+    <value>This clinic has nurses assigned. They will be unassigned.</value>
+  </data>
+  <data name="ClinicName" xml:space="preserve">
+    <value>Clinic Name</value>
+  </data>
+  <data name="Clinics" xml:space="preserve">
+    <value>Clinics</value>
+  </data>
+  <data name="ClinicsSubtitle" xml:space="preserve">
+    <value>Manage your clinics and their shift configurations</value>
+  </data>
+  <data name="CompDaysGranted" xml:space="preserve">
+    <value>comp days granted</value>
+  </data>
+  <data name="CompDaysRevoked" xml:space="preserve">
+    <value>comp days revoked</value>
+  </data>
+  <data name="ConfigureRequiredNurses" xml:space="preserve">
+    <value>Configure required nurses per shift type</value>
+  </data>
+  <data name="ConfigureShifts" xml:space="preserve">
+    <value>Configure Shifts</value>
+  </data>
+  <data name="ConfirmNewPassword" xml:space="preserve">
+    <value>Confirm New Password</value>
+  </data>
+  <data name="ConfirmRemoveManual" xml:space="preserve">
+    <value>This is a manual assignment. Are you sure you want to remove it?</value>
+  </data>
+  <data name="ContractedHours" xml:space="preserve">
+    <value>Contracted Hours/Week</value>
+  </data>
+  <data name="ContractedHoursHelp" xml:space="preserve">
+    <value>Default weekly contracted hours for new nurses (typically 40)</value>
+  </data>
+  <data name="CouldNotAssignNurse" xml:space="preserve">
+    <value>Could not assign nurse</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="CreateClinic" xml:space="preserve">
+    <value>Create Clinic</value>
+  </data>
+  <data name="CreateNewClinic" xml:space="preserve">
+    <value>Create a new clinic</value>
+  </data>
+  <data name="CreateNurse" xml:space="preserve">
+    <value>Create Nurse</value>
+  </data>
+  <data name="CreateSchedule" xml:space="preserve">
+    <value>Create Schedule</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Current Password</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DashboardSubtitle" xml:space="preserve">
+    <value>Overview of today's schedule and pending items</value>
+  </data>
+  <data name="Dates" xml:space="preserve">
+    <value>Dates</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="DaysToGenerate" xml:space="preserve">
+    <value>Days to Generate</value>
+  </data>
+  <data name="DefaultSettings" xml:space="preserve">
+    <value>Default Settings</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteClinic" xml:space="preserve">
+    <value>Delete Clinic</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete?</value>
+  </data>
+  <data name="DeleteLeave" xml:space="preserve">
+    <value>Delete Leave</value>
+  </data>
+  <data name="DeleteNurse" xml:space="preserve">
+    <value>Delete Nurse</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="EditClinic" xml:space="preserve">
+    <value>Edit Clinic</value>
+  </data>
+  <data name="EditLeave" xml:space="preserve">
+    <value>Edit Leave</value>
+  </data>
+  <data name="EditNurse" xml:space="preserve">
+    <value>Edit Nurse</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EmploymentDetails" xml:space="preserve">
+    <value>Employment Details</value>
+  </data>
+  <data name="EmploymentType" xml:space="preserve">
+    <value>Employment Type</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="EndDateMustBeAfterStart" xml:space="preserve">
+    <value>End date must be after start date.</value>
+  </data>
+  <data name="ErrorMustFix" xml:space="preserve">
+    <value>Error (must fix)</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="ExportExcel" xml:space="preserve">
+    <value>Export to Excel</value>
+  </data>
+  <data name="ExportPdf" xml:space="preserve">
+    <value>Export to PDF</value>
+  </data>
+  <data name="FailedToRemoveAssignment" xml:space="preserve">
+    <value>Failed to remove assignment.</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="FullTime" xml:space="preserve">
+    <value>Full Time</value>
+  </data>
+  <data name="Generate" xml:space="preserve">
+    <value>Generate</value>
+  </data>
+  <data name="GenerateInfoManual" xml:space="preserve">
+    <value>Manual assignments (marked with lock icon) will be preserved. Only auto-generated assignments will be replaced.</value>
+  </data>
+  <data name="GenerateWarning" xml:space="preserve">
+    <value>This will replace all existing assignments for the selected period.</value>
+  </data>
+  <data name="GetStartedClinic" xml:space="preserve">
+    <value>Get started by adding your first clinic</value>
+  </data>
+  <data name="HeadNurse" xml:space="preserve">
+    <value>Head Nurse</value>
+  </data>
+  <data name="HeadNurseHelp" xml:space="preserve">
+    <value>You can assign a head nurse after adding nurses to this clinic</value>
+  </data>
+  <data name="HeadNurseSettings" xml:space="preserve">
+    <value>Head Nurse Settings</value>
+  </data>
+  <data name="HideWorkload" xml:space="preserve">
+    <value>Hide Workload</value>
+  </data>
+  <data name="HighOvertimeBalance" xml:space="preserve">
+    <value>High Overtime Balance</value>
+  </data>
+  <data name="HireDate" xml:space="preserve">
+    <value>Hire Date</value>
+  </data>
+  <data name="HoursWeek" xml:space="preserve">
+    <value>Hours/Week</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="IncorrectPassword" xml:space="preserve">
+    <value>Current password is incorrect.</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid username or password.</value>
+  </data>
+  <data name="Junior" xml:space="preserve">
+    <value>Junior</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageHelp" xml:space="preserve">
+    <value>System language for the interface</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="LeaveRequests" xml:space="preserve">
+    <value>Leave Requests</value>
+  </data>
+  <data name="LeaveRequestsSubtitle" xml:space="preserve">
+    <value>Manage nurse leave and absences</value>
+  </data>
+  <data name="LeaveType" xml:space="preserve">
+    <value>Leave Type</value>
+  </data>
+  <data name="LeaveTypes" xml:space="preserve">
+    <value>Leave Types</value>
+  </data>
+  <data name="Legend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Manage</value>
+  </data>
+  <data name="ManualAssignment" xml:space="preserve">
+    <value>Manual Assignment</value>
+  </data>
+  <data name="MarkAsManual" xml:space="preserve">
+    <value>Mark as Manual Assignment</value>
+  </data>
+  <data name="MarkAsManualHelp" xml:space="preserve">
+    <value>Manual assignments are preserved when auto-generating schedule</value>
+  </data>
+  <data name="Maternity" xml:space="preserve">
+    <value>Maternity</value>
+  </data>
+  <data name="MaternityDescription" xml:space="preserve">
+    <value>Maternity/paternity leave</value>
+  </data>
+  <data name="MaxConsecutiveDays" xml:space="preserve">
+    <value>Max Consecutive Work Days</value>
+  </data>
+  <data name="MaxConsecutiveDaysHelp" xml:space="preserve">
+    <value>Maximum days a nurse can work in a row</value>
+  </data>
+  <data name="MaxOvertimeHours" xml:space="preserve">
+    <value>Max Overtime Hours/Week</value>
+  </data>
+  <data name="MaxOvertimeHoursHelp" xml:space="preserve">
+    <value>Maximum overtime hours allowed per week</value>
+  </data>
+  <data name="Mid" xml:space="preserve">
+    <value>Mid</value>
+  </data>
+  <data name="MidOrSeniorLevel" xml:space="preserve">
+    <value>Mid or Senior level nurses</value>
+  </data>
+  <data name="MinRestHours" xml:space="preserve">
+    <value>Min Rest Hours Between Shifts</value>
+  </data>
+  <data name="MinRestHoursHelp" xml:space="preserve">
+    <value>Minimum rest period required between consecutive shifts (typically 11 hours)</value>
+  </data>
+  <data name="MinimumCharacters" xml:space="preserve">
+    <value>Minimum 6 characters</value>
+  </data>
+  <data name="Morning" xml:space="preserve">
+    <value>Morning</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="NextWeek" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Night" xml:space="preserve">
+    <value>Night</value>
+  </data>
+  <data name="NoAssignments" xml:space="preserve">
+    <value>No assignments</value>
+  </data>
+  <data name="NoClinicsAvailable" xml:space="preserve">
+    <value>No clinics available</value>
+  </data>
+  <data name="NoClinicsYet" xml:space="preserve">
+    <value>No clinics yet</value>
+  </data>
+  <data name="NoDataFound" xml:space="preserve">
+    <value>No data found.</value>
+  </data>
+  <data name="NoHighOvertime" xml:space="preserve">
+    <value>No high overtime balances</value>
+  </data>
+  <data name="NoLeaveRequests" xml:space="preserve">
+    <value>No leave requests</value>
+  </data>
+  <data name="NoNursesAvailable" xml:space="preserve">
+    <value>No nurses available</value>
+  </data>
+  <data name="NoNursesFound" xml:space="preserve">
+    <value>No nurses found</value>
+  </data>
+  <data name="NoShiftsToday" xml:space="preserve">
+    <value>No shifts scheduled for today</value>
+  </data>
+  <data name="NoUpcomingLeave" xml:space="preserve">
+    <value>No upcoming leaves</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="NotAssigned" xml:space="preserve">
+    <value>Not assigned</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Nurse" xml:space="preserve">
+    <value>Nurse</value>
+  </data>
+  <data name="NurseSpecificSetting" xml:space="preserve">
+    <value>Nurse-specific setting (if defined)</value>
+  </data>
+  <data name="Nurses" xml:space="preserve">
+    <value>Nurses</value>
+  </data>
+  <data name="NursesSubtitle" xml:space="preserve">
+    <value>Manage your nursing staff</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="OverrideSettings" xml:space="preserve">
+    <value>Override Settings</value>
+  </data>
+  <data name="OvertimeHours" xml:space="preserve">
+    <value>Overtime Hours</value>
+  </data>
+  <data name="PartTime" xml:space="preserve">
+    <value>Part Time</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>New password and confirmation do not match.</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="PendingLeave" xml:space="preserve">
+    <value>Pending Leave</value>
+  </data>
+  <data name="PerDiem" xml:space="preserve">
+    <value>Per Diem</value>
+  </data>
+  <data name="Personal" xml:space="preserve">
+    <value>Personal</value>
+  </data>
+  <data name="PersonalDescription" xml:space="preserve">
+    <value>Personal time off</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>Personal Information</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="PoolNurse" xml:space="preserve">
+    <value>Pool Nurse</value>
+  </data>
+  <data name="PoolNurseHelp" xml:space="preserve">
+    <value>Can work at any clinic</value>
+  </data>
+  <data name="PreferredShifts" xml:space="preserve">
+    <value>Preferred Shifts</value>
+  </data>
+  <data name="PrefersConsecutiveDays" xml:space="preserve">
+    <value>Prefers Consecutive Work Days</value>
+  </data>
+  <data name="PreviousWeek" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="PrimaryClinic" xml:space="preserve">
+    <value>Primary Clinic</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="QuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="ReasonReplacedBy" xml:space="preserve">
+    <value>Replaced by {0}</value>
+  </data>
+  <data name="ReasonUnavailable" xml:space="preserve">
+    <value>unavailable</value>
+  </data>
+  <data name="RecalculateCompDays" xml:space="preserve">
+    <value>Recalculate compensatory days</value>
+  </data>
+  <data name="RecalculateCompDaysHelp" xml:space="preserve">
+    <value>Revoke existing comp days and recalculate from historical assignments</value>
+  </data>
+  <data name="RecordLeave" xml:space="preserve">
+    <value>Record Leave</value>
+  </data>
+  <data name="RecordLeaveWhenAbsent" xml:space="preserve">
+    <value>Record leave when nurses are absent</value>
+  </data>
+  <data name="RegenerateAll" xml:space="preserve">
+    <value>Regenerate All</value>
+  </data>
+  <data name="RegenerateAllWarning" xml:space="preserve">
+    <value>This will delete ALL auto-generated assignments and create new ones from scratch. Use only when you want to completely restart the schedule.</value>
+  </data>
+  <data name="RegisterNewNurse" xml:space="preserve">
+    <value>Register a new nurse</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="Removed" xml:space="preserve">
+    <value>removed</value>
+  </data>
+  <data name="RequiredNurses" xml:space="preserve">
+    <value>Required Nurses</value>
+  </data>
+  <data name="RequiredSeniorNurses" xml:space="preserve">
+    <value>Required Senior Nurses</value>
+  </data>
+  <data name="RequiresResponsibleNurse" xml:space="preserve">
+    <value>Requires responsible nurse</value>
+  </data>
+  <data name="ResponsibleNurse" xml:space="preserve">
+    <value>Responsible Nurse</value>
+  </data>
+  <data name="Review" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="SaveConfiguration" xml:space="preserve">
+    <value>Save Configuration</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Save Settings</value>
+  </data>
+  <data name="SavedSuccessfully" xml:space="preserve">
+    <value>Saved successfully.</value>
+  </data>
+  <data name="Schedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="ScheduleUpdated" xml:space="preserve">
+    <value>Schedule updated</value>
+  </data>
+  <data name="Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="SelectBorrowableClinics" xml:space="preserve">
+    <value>Select clinics this nurse can be borrowed to</value>
+  </data>
+  <data name="SelectLater" xml:space="preserve">
+    <value>Select later</value>
+  </data>
+  <data name="SelectNurse" xml:space="preserve">
+    <value>Select Nurse</value>
+  </data>
+  <data name="Senior" xml:space="preserve">
+    <value>Senior</value>
+  </data>
+  <data name="SetRequiredNursesFor" xml:space="preserve">
+    <value>Set required nurses per shift for</value>
+  </data>
+  <data name="SettingPrecedence" xml:space="preserve">
+    <value>Setting Precedence</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsDescription" xml:space="preserve">
+    <value>These settings define system-wide defaults. Individual nurses can have their own overrides configured in their profile.</value>
+  </data>
+  <data name="SettingsNotFound" xml:space="preserve">
+    <value>Settings not found.</value>
+  </data>
+  <data name="SettingsSubtitle" xml:space="preserve">
+    <value>Configure default values for the scheduling system</value>
+  </data>
+  <data name="ShiftConfiguration" xml:space="preserve">
+    <value>Shift Configuration</value>
+  </data>
+  <data name="ShiftDuration" xml:space="preserve">
+    <value>Shift Duration (hours)</value>
+  </data>
+  <data name="ShiftPreferences" xml:space="preserve">
+    <value>Shift Preferences</value>
+  </data>
+  <data name="ShiftType" xml:space="preserve">
+    <value>Shift Type</value>
+  </data>
+  <data name="ShowWorkload" xml:space="preserve">
+    <value>Show Workload</value>
+  </data>
+  <data name="Sick" xml:space="preserve">
+    <value>Sick</value>
+  </data>
+  <data name="SickDescription" xml:space="preserve">
+    <value>Medical leave due to illness</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="SignInToManage" xml:space="preserve">
+    <value>Sign in to manage schedules</value>
+  </data>
+  <data name="SkillLevel" xml:space="preserve">
+    <value>Skill Level</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>System default (these settings)</value>
+  </data>
+  <data name="SystemDefaultPlaceholder" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="SystemNotConfigured" xml:space="preserve">
+    <value>System not configured.</value>
+  </data>
+  <data name="SystemSettings" xml:space="preserve">
+    <value>System Settings</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="TodaysSchedule" xml:space="preserve">
+    <value>Today's Schedule</value>
+  </data>
+  <data name="TotalClinics" xml:space="preserve">
+    <value>Total Clinics</value>
+  </data>
+  <data name="TotalHours" xml:space="preserve">
+    <value>Total Hours</value>
+  </data>
+  <data name="TotalNurses" xml:space="preserve">
+    <value>Total Nurses</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Understaffed" xml:space="preserve">
+    <value>Understaffed</value>
+  </data>
+  <data name="UnderstaffedShifts" xml:space="preserve">
+    <value>Understaffed Shifts</value>
+  </data>
+  <data name="Unpaid" xml:space="preserve">
+    <value>Unpaid</value>
+  </data>
+  <data name="UnpaidDescription" xml:space="preserve">
+    <value>Unpaid leave of absence</value>
+  </data>
+  <data name="UpcomingLeave" xml:space="preserve">
+    <value>Upcoming Leave</value>
+  </data>
+  <data name="UpdateClinicDetails" xml:space="preserve">
+    <value>Update clinic details</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Update failed</value>
+  </data>
+  <data name="UpdateLeaveRecord" xml:space="preserve">
+    <value>Update leave record</value>
+  </data>
+  <data name="UpdateSuccess" xml:space="preserve">
+    <value>Updated successfully</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>Updating...</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Vacation" xml:space="preserve">
+    <value>Vacation</value>
+  </data>
+  <data name="VacationDescription" xml:space="preserve">
+    <value>Planned annual leave</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>View All</value>
+  </data>
+  <data name="ViewSchedule" xml:space="preserve">
+    <value>View Schedule</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Weeks" xml:space="preserve">
+    <value>Weeks</value>
+  </data>
+  <data name="WeeksToGenerate" xml:space="preserve">
+    <value>Weeks to Generate</value>
+  </data>
+  <data name="Workload" xml:space="preserve">
+    <value>Workload</value>
+  </data>
+</root>
