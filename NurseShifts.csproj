@@ -24,4 +24,9 @@
     <PackageReference Include="QuestPDF" Version="2024.10.0" />
   </ItemGroup>
 
+  <!-- Auto-restore client-side libraries via LibMan before build -->
+  <Target Name="LibManRestore" BeforeTargets="Build">
+    <Exec Command="libman restore" ContinueOnError="false" />
+  </Target>
+
 </Project>
