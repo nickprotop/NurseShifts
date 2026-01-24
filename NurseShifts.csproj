@@ -26,7 +26,8 @@
 
   <!-- Auto-restore client-side libraries via LibMan before build -->
   <Target Name="LibManRestore" BeforeTargets="Build">
-    <Exec Command="libman restore" ContinueOnError="false" />
+    <Exec Command="dotnet tool restore" ContinueOnError="false" />
+    <Exec Command="dotnet libman restore" ContinueOnError="false" />
   </Target>
 
 </Project>
