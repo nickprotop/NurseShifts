@@ -58,7 +58,9 @@ __pycache__/
 .env.*
 node_modules/
 dist/
-!wwwroot/lib/**/dist/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Client-side libraries (restored via LibMan)
+wwwroot/lib/
