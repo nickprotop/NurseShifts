@@ -267,9 +267,17 @@ public class ScheduleService : IScheduleService
         var weeklyHoursTracker = new Dictionary<int, Dictionary<DateOnly, int>>();
 
         // Pre-populate trackers with existing assignments
+        // Load historical data to properly calculate consecutive days and weekly hours across week boundaries
+        var maxConsecutiveDays = settings.DefaultMaxConsecutiveWorkDays;
+        var historyStart = startDate.AddDays(-maxConsecutiveDays);
+        // Also ensure we load from the start of the week containing startDate for accurate weekly hours
+        var weekStartForHistory = GetWeekStart(startDate);
+        if (weekStartForHistory < historyStart)
+            historyStart = weekStartForHistory;
+
         var allExistingAssignments = await _context.ShiftAssignments
             .Include(sa => sa.Nurse)
-            .Where(sa => sa.ClinicId == clinicId && sa.Date >= startDate && sa.Date <= endDate)
+            .Where(sa => sa.ClinicId == clinicId && sa.Date >= historyStart && sa.Date <= endDate)
             .ToListAsync();
 
         foreach (var existing in allExistingAssignments)
