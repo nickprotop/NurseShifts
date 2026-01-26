@@ -145,7 +145,9 @@ public class NurseAvailabilityService : INurseAvailabilityService
         }
 
         // Check weekly hours
-        var weekStart = date.AddDays(-(int)date.DayOfWeek + 1);
+        // Calculate Monday as week start (handles Sunday correctly where DayOfWeek=0)
+        var daysFromMonday = ((int)date.DayOfWeek - 1 + 7) % 7;
+        var weekStart = date.AddDays(-daysFromMonday);
         var weeklyHours = await GetWeeklyHoursAsync(nurse.Id, weekStart);
         var maxWeekly = nurse.ContractedHoursPerWeek + (nurse.MaxOvertimeHoursPerWeek ?? settings.DefaultMaxOvertimeHoursPerWeek);
         if (weeklyHours + 8 > maxWeekly)
